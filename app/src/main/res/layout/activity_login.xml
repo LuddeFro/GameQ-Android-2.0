@@ -1,0 +1,86 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="io.gameq.android.LoginActivity"
+    android:background="#FF4C5A6D"
+    android:gravity="bottom">
+
+    <!-- Login progress -->
+    <ProgressBar android:id="@+id/login_progress" style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp" android:visibility="gone" />
+
+    <LinearLayout android:id="@+id/email_login_form" android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:orientation="vertical"
+        android:gravity="bottom">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/imageView"
+            android:layout_gravity="center_horizontal"
+            android:contentDescription="@string/logo_alt" />
+
+        <AutoCompleteTextView android:id="@+id/email" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:hint="@string/prompt_email"
+            android:inputType="textEmailAddress" android:maxLines="1"
+            android:singleLine="true"
+            android:backgroundTint="#FFFFFFFF"
+            android:textColorHint="#FFb6bfc6"
+            android:textColor="#FFFFFF" />
+
+        <EditText android:id="@+id/password" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:hint="@string/prompt_password"
+            android:imeActionId="@+id/login"
+            android:imeActionLabel="@string/action_sign_in"
+            android:imeOptions="actionUnspecified" android:inputType="textPassword"
+            android:maxLines="1" android:singleLine="true"
+            android:backgroundTint="#FFFFFFFF"
+            android:textColor="#FFFFFFFF"
+            android:textColorHint="#FFb6bfc6" />
+
+        <EditText android:id="@+id/confirm_password" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:hint="@string/prompt_password"
+            android:imeActionId="@+id/login"
+            android:imeActionLabel="@string/action_register"
+            android:imeOptions="actionUnspecified" android:inputType="textPassword"
+            android:maxLines="1" android:singleLine="true"
+            android:backgroundTint="#FFFFFFFF"
+            android:textColor="#FFFFFFFF"
+            android:textColorHint="#FFb6bfc6"
+            android:layout_marginBottom="70dp"
+            android:visibility="invisible" />
+
+        <Button android:id="@+id/login_button_top" style="?android:textAppearanceSmall"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginTop="15dp" android:text="@string/action_sign_in"
+            android:textStyle="bold"
+            android:background="#FFFF6861"
+            android:textColor="#FFFFFFFF" />
+
+        <Button android:id="@+id/login_button_bottom" style="?android:textAppearanceSmall"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginTop="15dp" android:text="@string/action_register"
+            android:textStyle="bold"
+            android:background="#FFFFFFFF"
+            android:textColor="#FFFF6861" />
+
+        <Button android:id="@+id/login_button_forgot" style="?android:textAppearanceSmall"
+            android:layout_width="match_parent" android:layout_height="20sp"
+            android:layout_marginTop="15dp" android:text="@string/action_forgot_password"
+            android:background="#00FFFFFF"
+            android:textColor="#FFb6bfc6"
+            android:textSize="10sp"
+            android:textStyle="normal"
+            android:backgroundTint="#00FFFFFF"
+            android:shadowColor="#00FFFFFF"
+            android:stateListAnimator="@null" />
+
+    </LinearLayout>
+
+</LinearLayout>
+

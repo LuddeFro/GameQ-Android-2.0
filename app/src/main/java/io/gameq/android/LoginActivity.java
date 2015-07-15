@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.AsyncTask;
 
 import android.os.Build;
 import android.os.Bundle;
@@ -18,6 +17,7 @@ import android.provider.ContactsContract;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -66,8 +66,8 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor>, 
         mBottomButton = (Button) findViewById(R.id.login_button_bottom);
         mForgotButton = (Button) findViewById(R.id.login_button_forgot);
         mPasswordView = (EditText) findViewById(R.id.password);
-
-
+        mConfirmPasswordView.setEnabled(false);
+        mLoginFormView = findViewById(R.id.email_login_form);
         mTopButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                pressedTopButton();
@@ -132,7 +132,6 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor>, 
 
 
 
-        mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
     }
 
@@ -204,7 +203,15 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor>, 
         mForgotButton.setEnabled(true);
         mEmailView.setEnabled(true);
         mPasswordView.setEnabled(true);
-        mConfirmPasswordView.setEnabled(true);
+        mConfirmPasswordView.setEnabled(false);
+        if (bolRegistering) {
+            mForgotButton.setEnabled(false);
+            mConfirmPasswordView.setEnabled(true);
+        } else if (bolReportingForgottenPassword){
+            mPasswordView.setEnabled(false);
+            mForgotButton.setEnabled(false);
+        }
+
     }
 
     private void disableAll() {
@@ -279,7 +286,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor>, 
 
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
-        List<String> emails = new ArrayList<String>();
+        List<String> emails = new ArrayList<>();
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
             emails.add(cursor.getString(ProfileQuery.ADDRESS));
@@ -317,14 +324,14 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor>, 
         };
 
         int ADDRESS = 0;
-        int IS_PRIMARY = 1;
+        //int IS_PRIMARY = 1;
     }
 
 
     private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
         //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
         ArrayAdapter<String> adapter =
-                new ArrayAdapter<String>(LoginActivity.this,
+                new ArrayAdapter<>(LoginActivity.this,
                         android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
 
         mEmailView.setAdapter(adapter);
@@ -334,15 +341,71 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor>, 
 
 
     private void pressedTopButton() {
-
+        attemptConnect();
     }
 
     private void pressedBottomButton() {
-
+        if (bolRegistering) {
+            hideSignUp();
+        } else if (bolReportingForgottenPassword) {
+            hideForgotPassword();
+        } else { // logging in
+            showSignUp();
+        }
     }
 
     private void pressedForgotButton() {
+        showForgotPassword();
+    }
 
+    private void showForgotPassword() {
+        AlphaAnimation anim = new AlphaAnimation(1.0f, 0.0f);
+        anim.setDuration(1000);
+        mForgotButton.startAnimation(anim);
+        mForgotButton.setEnabled(false);
+        mPasswordView.startAnimation(anim);
+        mPasswordView.setEnabled(false);
+        mTopButton.setText(getString(R.string.action_submit_email));
+        mBottomButton.setText(getString(R.string.back));
+    }
+
+    private void hideForgotPassword() {
+        AlphaAnimation anim = new AlphaAnimation(0.0f, 1.0f);
+        anim.setDuration(1000);
+        mPasswordView.setText("");
+        mForgotButton.startAnimation(anim);
+        mForgotButton.setEnabled(true);
+        mPasswordView.startAnimation(anim);
+        mPasswordView.setEnabled(true);
+        mTopButton.setText(getString(R.string.action_sign_in));
+        mBottomButton.setText(getString(R.string.action_register));
+    }
+
+    private void showSignUp() {
+        AlphaAnimation animshow = new AlphaAnimation(0.0f, 1.0f);
+        animshow.setDuration(1000);
+        AlphaAnimation animhide = new AlphaAnimation(1.0f, 0.0f);
+        animhide.setDuration(1000);
+        mConfirmPasswordView.setText("");
+        mConfirmPasswordView.startAnimation(animshow);
+        mConfirmPasswordView.setEnabled(true);
+        mForgotButton.startAnimation(animhide);
+        mForgotButton.setEnabled(false);
+        mTopButton.setText(getString(R.string.action_register));
+        mBottomButton.setText(getString(R.string.back));
+    }
+
+    private void hideSignUp() {
+        AlphaAnimation animshow = new AlphaAnimation(0.0f, 1.0f);
+        animshow.setDuration(1000);
+        AlphaAnimation animhide = new AlphaAnimation(1.0f, 0.0f);
+        animhide.setDuration(1000);
+        mConfirmPasswordView.startAnimation(animhide);
+        mConfirmPasswordView.setEnabled(false);
+        mForgotButton.startAnimation(animshow);
+        mForgotButton.setEnabled(true);
+        mTopButton.setText(getString(R.string.action_sign_in));
+        mBottomButton.setText(getString(R.string.action_register));
     }
 
 

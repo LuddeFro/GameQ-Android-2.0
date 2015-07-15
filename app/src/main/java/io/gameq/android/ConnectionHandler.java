@@ -391,10 +391,14 @@ public final class ConnectionHandler {
     }
 
     public static String loadEmail() {
-        if (preferences.getString("email") == null) {
+        if (preferences != null) {
+            if (preferences.getString("email") == null) {
+                return "";
+            }
+            return preferences.getString("email");
+        } else {
             return "";
         }
-        return preferences.getString("email");
     }
 
     private static String loadToken() {

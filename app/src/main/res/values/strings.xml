@@ -1,9 +1,11 @@
 <resources>
     <string name="app_name">GameQ</string>
     <string name="logo_alt">GameQ Logo</string>
-    <string name="title_section1">Section 1</string>
-    <string name="title_section2">Section 2</string>
-    <string name="title_section3">Section 3</string>
+    <string name="title_section1">Enable Notifications</string>
+    <string name="title_section2">Auto Accept (Coming Soon)</string>
+    <string name="title_section3">Feedback</string>
+    <string name="title_section4">Change Password</string>
+    <string name="title_section5">How to use GameQ</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -11,6 +13,7 @@
     <string name="action_example">Example action</string>
 
     <string name="action_settings">Settings</string>
+    <string name="unknown">Unknown</string>
 
 
 
@@ -21,10 +24,11 @@
 
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
-    <string name="action_sign_in">Sign in</string>
-    <string name="action_register">Join</string>
-    <string name="back">Back</string>
-    <string name="submit_email">Submit Email</string>
+    <string name="action_sign_in">SIGN IN</string>
+    <string name="action_register">JOIN</string>
+    <string name="action_sign_out">SIGN OUT</string>
+    <string name="back">BACK</string>
+    <string name="action_submit_email">SUBMIT EMAIL</string>
     <string name="action_forgot_password">Forgot Password?</string>
     <string name="invalid_password">Must be 6 characters</string>
 
@@ -32,5 +36,10 @@
     <string name="error_invalid_password">This password is too short</string>
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_field_required">This field is required</string>
+
+
+
+
+
 
 </resources>

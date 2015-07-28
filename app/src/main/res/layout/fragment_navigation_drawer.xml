@@ -57,25 +57,35 @@ android:gravity="bottom|top"
         android:layout_alignParentStart="true" />
 
         <CheckBox
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
             android:id="@+id/off_box"
             android:layout_centerVertical="true"
             android:layout_alignParentRight="true"
+
             android:layout_alignParentEnd="true"
-            android:backgroundTint="#FFFF0000"
-            android:checked="false" />
+            android:checked="false"
+            android:button="@drawable/check_box_red"/>
 
         <CheckBox
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
             android:id="@+id/on_box"
+            android:layout_marginRight="15dp"
             android:layout_alignTop="@+id/off_box"
             android:layout_toLeftOf="@+id/off_box"
             android:layout_toStartOf="@+id/off_box"
-            android:checked="true" />
+            android:checked="true"
+            android:button="@drawable/check_box_green" />
+
 
     </RelativeLayout>
+
+    <View android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="#FF34404d"
+        android:layout_alignBottom="@id/notification_container"/>
+
         <RelativeLayout android:id="@+id/auto_accept_container"
             android:layout_width="match_parent"
             android:layout_height="40dp"
@@ -98,6 +108,11 @@ android:gravity="bottom|top"
         android:layout_centerHorizontal="true"
         android:layout_alignParentLeft="true"/>
         </RelativeLayout>
+
+    <View android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="#FF34404d"
+        android:layout_alignBottom="@id/auto_accept_container"/>
     <RelativeLayout android:id="@+id/feedback_container"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
@@ -119,7 +134,35 @@ android:gravity="bottom|top"
         android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
         android:layout_alignParentLeft="true" />
+
+
+        <Button android:id="@+id/feedback_button"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#00000000"
+            android:stateListAnimator="@null"
+            android:enabled="true" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/submit"
+            android:id="@+id/feedback_submit_button"
+            android:layout_alignRight="@+id/feedback_button"
+            android:layout_alignEnd="@+id/feedback_button"
+            android:layout_alignParentBottom="true"
+            android:textColor="#FFFFFFFF"
+            android:background="#FFFF6861"
+            android:enabled="false"
+            android:alpha="0"
+            android:visibility="gone" />
+
+
     </RelativeLayout>
+    <View android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="#FF34404d"
+        android:layout_alignBottom="@id/feedback_container"/>
     <RelativeLayout android:id="@+id/change_password_container"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
@@ -141,7 +184,33 @@ android:gravity="bottom|top"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:layout_alignParentLeft="true" />
+
+        <Button android:id="@+id/change_password_button"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#00000000"
+            android:stateListAnimator="@null"
+            android:enabled="true" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/submit"
+            android:id="@+id/change_password_submit_button"
+            android:layout_alignRight="@+id/change_password_button"
+            android:layout_alignEnd="@+id/change_password_button"
+            android:layout_alignParentBottom="true"
+            android:textColor="#FFFFFFFF"
+            android:background="#FFFF6861"
+            android:enabled="false"
+            android:alpha="0"
+            android:visibility="gone" />
+
     </RelativeLayout>
+    <View android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="#FF34404d"
+        android:layout_alignBottom="@id/change_password_container"/>
     <RelativeLayout android:id="@+id/tutorial_container"
                         android:layout_width="match_parent"
                         android:layout_height="40dp"
@@ -163,9 +232,20 @@ android:gravity="bottom|top"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:layout_alignParentLeft="true" />
+
+        <Button android:id="@+id/tutorial_button"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#00000000"
+            android:stateListAnimator="@null"
+            android:enabled="true" />
+
     </RelativeLayout>
 
-
+    <View android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="#FF34404d"
+        android:layout_alignBottom="@id/tutorial_container"/>
 
     <Button
         android:layout_width="wrap_content"
@@ -182,7 +262,8 @@ android:gravity="bottom|top"
         android:layout_alignParentTop="false"
         android:layout_marginRight="15dp"
         android:layout_marginLeft="15dp"
-        android:layout_marginBottom="15dp" />
+        android:layout_marginBottom="15dp"
+        android:enabled="true" />
 
 
 </RelativeLayout>

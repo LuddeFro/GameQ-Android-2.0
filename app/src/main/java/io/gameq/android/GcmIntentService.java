@@ -19,7 +19,7 @@ public class GcmIntentService extends IntentService {
     public static final int NOTIFICATION_ID = 1;
     private NotificationManager mNotificationManager;
     NotificationCompat.Builder builder;
-    static final String TAG = "GameQ-Android";
+    static final String TAG = "GameQ-GCM-IntServ";
 
     private static final String SALT = "iuyavos32bdf83ika";
 

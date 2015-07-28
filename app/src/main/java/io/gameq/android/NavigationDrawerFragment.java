@@ -1,5 +1,6 @@
 package io.gameq.android;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.app.Activity;
 import android.support.v7.app.ActionBar;
@@ -11,6 +12,7 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,9 +21,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 /**
@@ -60,6 +66,23 @@ public class NavigationDrawerFragment extends Fragment {
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
 
+    static final String TAG = "GameQ-NavD-Frag";
+
+    private CheckBox mOnBoxNotifications;
+    private CheckBox mOffBoxNotifications;
+    private Button mFeedbackButton;
+    private Button mChangePasswordButton;
+    private Button mSubmitFeedbackButton;
+    private Button mSubmitChangePasswordButton;
+    private Button mTutorialButton;
+    private Button mLogoutButton;
+    private TextView mLblUsername;
+    public Activity mMainActivity;
+
+
+
+
+
     public NavigationDrawerFragment() {
     }
 
@@ -77,8 +100,8 @@ public class NavigationDrawerFragment extends Fragment {
             mFromSavedInstanceState = true;
         }
 
-        // Select either the default item (0) or the last selected item.
-        selectItem(mCurrentSelectedPosition);
+
+
     }
 
     @Override
@@ -94,6 +117,81 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerRelativeLayout = (RelativeLayout) inflater.inflate(
                 R.layout.fragment_navigation_drawer, container, false);
         System.out.println("kommer hit iaf?");
+
+
+
+
+
+        mOnBoxNotifications = (CheckBox) mDrawerRelativeLayout.findViewById(R.id.on_box);
+        mOffBoxNotifications = (CheckBox) mDrawerRelativeLayout.findViewById(R.id.off_box);
+        mFeedbackButton = (Button) mDrawerRelativeLayout.findViewById(R.id.feedback_button);
+        mChangePasswordButton = (Button) mDrawerRelativeLayout.findViewById(R.id.change_password_button);
+        mSubmitFeedbackButton = (Button) mDrawerRelativeLayout.findViewById(R.id.feedback_submit_button);
+        mSubmitChangePasswordButton = (Button) mDrawerRelativeLayout.findViewById(R.id.change_password_submit_button);
+        mTutorialButton = (Button) mDrawerRelativeLayout.findViewById(R.id.tutorial_button);
+        mLogoutButton = (Button) mDrawerRelativeLayout.findViewById(R.id.logout_button);
+        mLblUsername = (TextView) mDrawerRelativeLayout.findViewById(R.id.header_label);
+
+        mFeedbackButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                pressedFeedback();
+            }
+        });
+
+        mChangePasswordButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                pressedChangePassword();
+            }
+        });
+
+        mSubmitFeedbackButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                pressedSubmitFeedback();
+            }
+        });
+
+        mSubmitChangePasswordButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                pressedSubmitChangePassword();
+            }
+        });
+
+        mLogoutButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                pressedLogout();
+            }
+        });
+
+        mTutorialButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                pressedTutorial();
+            }
+        });
+
+
+        mOffBoxNotifications.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                pressedTurnOffNotifications();
+            }
+        });
+
+
+        mOnBoxNotifications.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                pressedTurnOnNotifications();
+            }
+        });
+
+        ConnectionHandler.loadShouldReceiveNotifications();
+        if (ConnectionHandler.loadShouldReceiveNotifications()) {
+            mOnBoxNotifications.setChecked(false);
+            mOffBoxNotifications.setChecked(true);
+        } else {
+            mOnBoxNotifications.setChecked(true);
+            mOffBoxNotifications.setChecked(false);
+        }
+        mLblUsername.setText(ConnectionHandler.loadEmail());
+
 
         return mDrawerRelativeLayout;
     }
@@ -141,6 +239,7 @@ public class NavigationDrawerFragment extends Fragment {
 
             @Override
             public void onDrawerOpened(View drawerView) {
+                System.out.println("OPENED DRAWER");
                 super.onDrawerOpened(drawerView);
                 if (!isAdded()) {
                     return;
@@ -176,19 +275,7 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerLayout.setDrawerListener(mDrawerToggle);
     }
 
-    private void selectItem(int position) {
-        System.out.println("Selected item");
-//        mCurrentSelectedPosition = position;
-//        if (mDrawerListView != null) {
-//            mDrawerListView.setItemChecked(position, true);
-//        }
-//        if (mDrawerLayout != null) {
-//            mDrawerLayout.closeDrawer(mFragmentContainerView);
-//        }
-//        if (mCallbacks != null) {
-//            mCallbacks.onNavigationDrawerItemSelected(position);
-//        }
-    }
+
 
     @Override
     public void onAttach(Activity activity) {
@@ -268,4 +355,106 @@ public class NavigationDrawerFragment extends Fragment {
          */
         void onNavigationDrawerItemSelected(int position);
     }
+
+
+
+
+
+
+
+    public void pressedSubmitFeedback() {
+        System.out.println("pressed sub feed");
+    }
+    public void pressedSubmitChangePassword() {
+        System.out.println("pressed sub change pass");
+
+    }
+
+    public void pressedFeedback() {
+        System.out.println("pressed feed");
+
+    }
+
+    public void pressedChangePassword() {
+        System.out.println("pressed change pass");
+
+    }
+
+    public void pressedTutorial() {
+        System.out.println("pressed tutorial");
+        Intent intent = new Intent(mMainActivity, Tutorial_Activity_Fragment.class);
+        intent.putExtra(getString(R.string.intent_inhouse_extra), true);
+        startActivity(intent);
+    }
+
+    public void pressedLogout() {
+
+        Log.i(TAG, "pressed Logout");
+
+        disableAll();
+        ConnectionHandler.logout(new LogoutHandler());
+        System.out.println("pressed logout");
+    }
+    public class LogoutHandler implements CallbackGeneral {
+        @Override
+        public void callback(final boolean success, final String error) {
+            mMainActivity.runOnUiThread(new Runnable() {
+                public void run() {
+                    Log.d("UI thread", "I am the UI thread");
+                    enableAll();
+                    if (success) {
+                        //nothing special
+                    } else {
+                        Log.i(TAG, error);
+                        System.out.println(error);
+                    }
+                    Intent intent = new Intent(mMainActivity, LoginActivity.class);
+                    intent.putExtra(getString(R.string.intent_inhouse_extra), true);
+                    startActivity(intent);
+
+                }
+            });
+
+        }
+    }
+
+    public void pressedTurnOnNotifications() {
+        Log.i(TAG, "pressed notifs on");
+        System.out.println("pressed on notifs");
+        mOffBoxNotifications.setChecked(false);
+        ConnectionHandler.saveShouldReceiveNotifications(true);
+    }
+
+    public void pressedTurnOffNotifications() {
+        Log.i(TAG, "pressed notifs off");
+        System.out.println("pressed off notifs");
+        mOnBoxNotifications.setChecked(false);
+        ConnectionHandler.saveShouldReceiveNotifications(false);
+
+    }
+
+    private void enableAll() {
+        mFeedbackButton.setEnabled(true);
+        mSubmitFeedbackButton.setEnabled(true);
+        mChangePasswordButton.setEnabled(true);
+        mSubmitChangePasswordButton.setEnabled(true);
+        mOnBoxNotifications.setEnabled(true);
+        mOffBoxNotifications.setEnabled(true);
+        mTutorialButton.setEnabled(true);
+        mLogoutButton.setEnabled(true);
+    }
+
+    private void disableAll() {
+        mFeedbackButton.setEnabled(false);
+        mSubmitFeedbackButton.setEnabled(false);
+        mChangePasswordButton.setEnabled(false);
+        mSubmitChangePasswordButton.setEnabled(false);
+        mOnBoxNotifications.setEnabled(false);
+        mOffBoxNotifications.setEnabled(false);
+        mTutorialButton.setEnabled(false);
+        mLogoutButton.setEnabled(false);
+    }
+
+
+
 }

@@ -26,7 +26,7 @@ public final class ConnectionHandler {
     private static Context context;
     private static String TAG = "GAMEQ";
     private static String sessionToken = "";
-    private static long serverDelay = 0;
+    public static long serverDelay = 0;
 
 
     protected ConnectionHandler() {
@@ -41,7 +41,7 @@ public final class ConnectionHandler {
 
 
     public static String post(String extension, String arguments) {
-        String serverURL = "http://server.gameq.io/android/";
+        String serverURL = "http://server.gameq.io:8080/android/";
         String url = serverURL + extension + "?";
         arguments = arguments + "&key=68440fe0484ad2bb1656b56d234ca5f463f723c3d3d58c3398190877d1d963bb";
         Log.i(TAG, "sending: " + arguments + ", to: " + url);
@@ -78,7 +78,7 @@ public final class ConnectionHandler {
             }
             in.close();
             returnString = response.toString();
-
+            System.out.println(returnString);
 
 
         } catch (MalformedURLException e) {
@@ -143,7 +143,6 @@ public final class ConnectionHandler {
                 return null;
             }
         }.execute();
-
     }
 
     public static void register(CallbackGeneral caller, String email, String password) {
@@ -379,8 +378,20 @@ public final class ConnectionHandler {
         preferences.put("device_id", String.valueOf(id));
     }
 
+    public static void saveFirstLoginDone() {
+        preferences.put("first_login", String.valueOf(false));
+    }
+
     public static void saveShouldReceiveNotifications(boolean registered) {
         preferences.put("notifications", String.valueOf(registered));
+    }
+
+    public static boolean loadFirstLogin() {
+        if (preferences.getString("first_login") == null) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     private static String loadPassword() {

@@ -1,17 +1,25 @@
 package io.gameq.android;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.os.CountDownTimer;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.RotateAnimation;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 
 public class MainActivity extends ActionBarActivity
@@ -21,23 +29,89 @@ public class MainActivity extends ActionBarActivity
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
     private NavigationDrawerFragment mNavigationDrawerFragment;
+    public Activity myself;
 
-
+    private TextView mTextViewCountdown;
+    private TextView mTextViewStatus;
+    private TextView mTextViewGame;
+    private ProgressBar mCountdownBar;
+    private ProgressBar mSpinBar;
+    private CountDownTimer mCountdownTimer;
+    private final int barMax = 1000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ConnectionHandler.instantiateDataModel(getApplicationContext());
-        
+        myself = this;
+        Intent startIntent = getIntent();
+        if (!startIntent.getBooleanExtra(getString(R.string.intent_inhouse_extra), false)) {
+            if (ConnectionHandler.loadEmail() == "") {
+                Intent intent = new Intent(this, LoginActivity.class);
+                intent.putExtra(getString(R.string.intent_inhouse_extra), true);
+                startActivity(intent);
+            } else {
+                ConnectionHandler.loginWithRememberedDetails(new AutoLoginHandler());
+            }
+        }
+
+
+
         setContentView(R.layout.activity_main);
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
 
+
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+
+        mNavigationDrawerFragment.mMainActivity = this;
+
+
+        mCountdownBar = (ProgressBar) findViewById(R.id.progressBar);
+        Animation an = new RotateAnimation(0.0f, 270.0f, 200f, 200f);
+        an.setFillAfter(true);
+        mCountdownBar.startAnimation(an);
+        mSpinBar = (ProgressBar) findViewById(R.id.spinBar);
+
+        mTextViewCountdown = (TextView) findViewById(R.id.textViewCountdown);
+        mTextViewGame = (TextView) findViewById(R.id.textViewGame);
+        mTextViewStatus = (TextView) findViewById(R.id.textViewStatus);
+
+        mTextViewStatus.setText(getString(R.string.invisible_string));
+        mTextViewGame.setText(getString(R.string.invisible_string));
+        mTextViewCountdown.setText(getString(R.string.invisible_string));
+
+        mSpinBar.setProgress(1);
+        mCountdownBar.setProgress(1);
+        mSpinBar.setAlpha(0);
+        mCountdownBar.setAlpha(0);
+
+
+    }
+
+    public class AutoLoginHandler implements CallbackGeneral {
+        @Override
+        public void callback(final boolean success, final String error) {
+            myself.runOnUiThread(new Runnable() {
+                public void run() {
+                    Log.d("UI thread", "I am the UI thread");
+                    if (success) {
+                        //do nothing
+                    } else {
+                        Intent intent = new Intent(myself, LoginActivity.class);
+                        intent.putExtra(getString(R.string.intent_inhouse_extra), true);
+                        startActivity(intent);
+                        System.out.println(error);
+                    }
+                }
+            });
+
+
+        }
     }
 
     @Override
@@ -125,6 +199,7 @@ public class MainActivity extends ActionBarActivity
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+
             return rootView;
         }
 
@@ -135,5 +210,72 @@ public class MainActivity extends ActionBarActivity
                     getArguments().getInt(ARG_SECTION_NUMBER));
         }
     }
+
+
+
+
+
+
+
+
+    private void startCountdown(long to) {
+        long fromL = to - ConnectionHandler.serverDelay - (System.currentTimeMillis() / 1000L);
+        int from = (int) fromL;
+        countDown(from);
+        mCountdownBar.setAlpha(1);
+        mSpinBar.setAlpha(1);
+
+    }
+
+
+
+    private void countDown(final int count) {
+        if (count < 0) {
+            mTextViewCountdown.setText("");
+            return;
+        }
+
+        AlphaAnimation animation = new AlphaAnimation(1.0f, 0.0f);
+        animation.setDuration(1000);
+        animation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                mTextViewCountdown.setText(String.valueOf(count));
+            }
+
+            @Override
+            public void onAnimationEnd(Animation anim) {
+                countDown(count - 1);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        mTextViewCountdown.startAnimation(animation);
+    }
+
+    private void startTimer(final int seconds) {
+        mCountdownTimer = new CountDownTimer(seconds * 1000, 100) {
+            // 500 means, onTick function will be called at every 500 milliseconds
+
+            @Override
+            public void onTick(long leftTimeInMilliseconds) {
+                int barVal = barMax * ((int)leftTimeInMilliseconds/((seconds)*1000));
+                mCountdownBar.setProgress(barVal);
+                // format the textview to show the easily readable format
+            }
+            @Override
+            public void onFinish() {
+
+            }
+        }.start();
+
+    }
+
+
+
+
 
 }

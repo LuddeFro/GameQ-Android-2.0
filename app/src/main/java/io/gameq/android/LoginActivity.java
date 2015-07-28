@@ -6,6 +6,7 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.CursorLoader;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
@@ -14,7 +15,9 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
@@ -32,7 +35,7 @@ import java.util.List;
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginActivity extends Activity implements LoaderCallbacks<Cursor>, CallbackGeneral {
+public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
 
     /**
@@ -52,6 +55,9 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor>, 
 
     private boolean bolRegistering = false;
     private boolean bolReportingForgottenPassword = false;
+
+    static final String TAG = "GameQ-Login";
+    public final Activity myself = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +92,10 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor>, 
             }
         });
 
+
+        mEmailView.setImeOptions(EditorInfo.IME_ACTION_NEXT);
+        mPasswordView.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        mConfirmPasswordView.setImeOptions(EditorInfo.IME_ACTION_DONE);
 
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -186,11 +196,11 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor>, 
             showProgress(true);
             disableAll();
             if (bolRegistering) {
-                ConnectionHandler.register(this, email, password);
+                ConnectionHandler.register(new RegisterHandler(), email, password);
             } else if (bolReportingForgottenPassword) {
-                ConnectionHandler.submitForgotPassword(this, email);
+                ConnectionHandler.submitForgotPassword(new ForgotHandler(), email);
             } else {
-                ConnectionHandler.login(this, email, password);
+                ConnectionHandler.login(new LoginHandler(), email, password);
             }
 
 
@@ -301,21 +311,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor>, 
 
     }
 
-    @Override
-    public void callback(boolean success, String error) {
-        enableAll();
-        showProgress(false);
-        if (success) {
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.putExtra(getString(R.string.intent_inhouse_extra), true);
-        } else {
-            mEmailView.setError(error);
-            mEmailView.requestFocus();
-        }
 
-
-
-    }
 
     private interface ProfileQuery {
         String[] PROJECTION = {
@@ -367,6 +363,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor>, 
         mPasswordView.setEnabled(false);
         mTopButton.setText(getString(R.string.action_submit_email));
         mBottomButton.setText(getString(R.string.back));
+        mEmailView.setImeOptions(EditorInfo.IME_ACTION_DONE);
     }
 
     private void hideForgotPassword() {
@@ -379,6 +376,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor>, 
         mPasswordView.setEnabled(true);
         mTopButton.setText(getString(R.string.action_sign_in));
         mBottomButton.setText(getString(R.string.action_register));
+        mEmailView.setImeOptions(EditorInfo.IME_ACTION_NEXT);
     }
 
     private void showSignUp() {
@@ -393,9 +391,11 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor>, 
         mForgotButton.setEnabled(false);
         mTopButton.setText(getString(R.string.action_register));
         mBottomButton.setText(getString(R.string.back));
+        mPasswordView.setImeOptions(EditorInfo.IME_ACTION_NEXT);
     }
 
     private void hideSignUp() {
+        mPasswordView.setImeOptions(EditorInfo.IME_ACTION_DONE);
         AlphaAnimation animshow = new AlphaAnimation(0.0f, 1.0f);
         animshow.setDuration(1000);
         AlphaAnimation animhide = new AlphaAnimation(1.0f, 0.0f);
@@ -409,6 +409,90 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor>, 
     }
 
 
+
+    public class LoginHandler implements CallbackGeneral {
+        @Override
+        public void callback(final boolean success, final String error) {
+            myself.runOnUiThread(new Runnable() {
+                public void run() {
+                    Log.d("UI thread", "I am the UI thread");
+                    enableAll();
+                    showProgress(false);
+                    if (success) {
+                        Log.d("UI thread", "successful");
+
+                        Intent intent = new Intent(myself, MainActivity.class);
+                        intent.putExtra(getString(R.string.intent_inhouse_extra), true);
+                        startActivity(intent);
+                    } else {
+                        Log.d("UI thread", "unsuccessful");
+
+                        mPasswordView.setText("");
+                        mPasswordView.setError(error);
+                        Log.i(TAG, error);
+                        System.out.println(error);
+                    }
+                }
+            });
+
+
+        }
+    }
+    public class RegisterHandler implements CallbackGeneral {
+        @Override
+        public void callback(final boolean success, final String error) {
+            myself.runOnUiThread(new Runnable() {
+                public void run() {
+                    Log.d("UI thread", "I am the UI thread");
+                    enableAll();
+                    showProgress(false);
+                    if (success) {
+                        Intent intent = new Intent(myself, MainActivity.class);
+                        intent.putExtra(getString(R.string.intent_inhouse_extra), true);
+                        startActivity(intent);
+                    } else {
+                        mPasswordView.setText("");
+                        mPasswordView.setError(error);
+                        Log.i(TAG, error);
+                        System.out.println(error);
+                    }
+                }
+            });
+
+
+        }
+    }
+
+    public class ForgotHandler implements CallbackGeneral {
+        @Override
+        public void callback(final boolean success, final String error) {
+            myself.runOnUiThread(new Runnable() {
+                public void run() {
+                    Log.d("UI thread", "I am the UI thread");
+                    enableAll();
+                    showProgress(false);
+                    if (success) {
+                        hideForgotPassword();
+                        new AlertDialog.Builder(myself)
+                                .setTitle("Password Reset")
+                                .setMessage("A new password has been sent to your email.")
+                                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                    }
+                                })
+                                .show();
+                    } else {
+                        mEmailView.setText("");
+                        mEmailView.setError(error);
+                        Log.i(TAG, error);
+                        System.out.println(error);
+                    }
+                }
+            });
+
+
+        }
+    }
 
 
 

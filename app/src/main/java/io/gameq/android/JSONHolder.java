@@ -23,12 +23,31 @@ public class JSONHolder {
     }
 
     public void populate(String jsonString) {
+        String oJsonString = jsonString;
+        if (jsonString == null) {
+            jsonString = "";
+        }
         JSONObject jObject = null;
         try {
             jObject = new JSONObject(jsonString);
         } catch (JSONException e) {
             success = false;
             System.out.println("json parse fail");
+            error = "json parse fail";
+            return;
+        }
+        if (jObject == null) {
+            success = false;
+            error = "null json, response was: " + oJsonString;
+            status = 0;
+            game = 0;
+            accept_before = 0;
+            device_id = 0;
+            session_token = "";
+            current_version = "";
+            download_link = "";
+            time = System.currentTimeMillis() / 1000L;
+            return;
         }
         try {
             success = jObject.getInt("success") != 0;

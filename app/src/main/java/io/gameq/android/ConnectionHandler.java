@@ -47,9 +47,12 @@ public final class ConnectionHandler {
         Log.i(TAG, "sending: " + arguments + ", to: " + url);
         URL obj;
         String returnString = null;
+        HttpURLConnection con;
+        BufferedReader in = null;
+        DataOutputStream wr = null;
         try {
             obj = new URL(url);
-            HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+            con = (HttpURLConnection) obj.openConnection();
 
             //add request header
             con.setRequestMethod("POST");
@@ -57,7 +60,7 @@ public final class ConnectionHandler {
 
             // Send post request
             con.setDoOutput(true);
-            DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+            wr = new DataOutputStream(con.getOutputStream());
             byte[] buf = arguments.getBytes("UTF-8");
             wr.write(buf, 0, buf.length);
             //wr.writeBytes(urlParameters);
@@ -69,7 +72,7 @@ public final class ConnectionHandler {
             Log.i(TAG, "Post parameters : " + arguments);
             Log.i(TAG, "Response Code : " + responseCode);
 
-            BufferedReader in = new BufferedReader(
+            in = new BufferedReader(
                     new InputStreamReader(con.getInputStream()));
             String inputLine;
 
@@ -85,6 +88,24 @@ public final class ConnectionHandler {
             System.out.println("URL Error (MalformedURLException) for " + url );
         } catch (IOException e) {
             System.out.println("URL Error (IOException) for " + url );
+        } finally {
+            if (wr != null) {
+                try {
+                    wr.close();
+                } catch (IOException e) {
+                    System.out.println("wr close exception");
+
+                }
+            }
+            if (in != null) {
+                try {
+                    in.close();
+
+                } catch (IOException e) {
+                    System.out.println("in close exception");
+
+                }
+            }
         }
 
         if (returnString == null) {

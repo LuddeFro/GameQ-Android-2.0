@@ -1,5 +1,6 @@
 package io.gameq.android;
 
+import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.app.Activity;
@@ -13,12 +14,15 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.BounceInterpolator;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -77,6 +81,17 @@ public class NavigationDrawerFragment extends Fragment {
     private Button mTutorialButton;
     private Button mLogoutButton;
     private TextView mLblUsername;
+
+    private EditText mTxtFeedback;
+    private EditText mTxtOldPassword;
+    private EditText mTxtNewPassword;
+    private EditText mTxtConfirmPassword;
+    private boolean mIsChangingPassword= false;
+    private boolean mIsWritingFeedback = false;
+    private RelativeLayout mChangePassContainer;
+    private RelativeLayout mFeedbackContainer;
+
+
     public Activity mMainActivity;
 
 
@@ -131,6 +146,62 @@ public class NavigationDrawerFragment extends Fragment {
         mTutorialButton = (Button) mDrawerRelativeLayout.findViewById(R.id.tutorial_button);
         mLogoutButton = (Button) mDrawerRelativeLayout.findViewById(R.id.logout_button);
         mLblUsername = (TextView) mDrawerRelativeLayout.findViewById(R.id.header_label);
+        mTxtConfirmPassword = (EditText) mDrawerRelativeLayout.findViewById(R.id.change_password_confirm_pass);
+        mTxtFeedback = (EditText) mDrawerRelativeLayout.findViewById(R.id.feedback_edit_text);
+        mTxtNewPassword = (EditText) mDrawerRelativeLayout.findViewById(R.id.change_password_new_pass);
+        mTxtOldPassword = (EditText) mDrawerRelativeLayout.findViewById(R.id.change_password_old_pass);
+        mChangePassContainer = (RelativeLayout) mDrawerRelativeLayout.findViewById(R.id.change_password_container);
+        mFeedbackContainer = (RelativeLayout) mDrawerRelativeLayout.findViewById(R.id.feedback_container);
+
+        mTxtFeedback.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        mTxtOldPassword.setImeOptions(EditorInfo.IME_ACTION_NEXT);
+        mTxtNewPassword.setImeOptions(EditorInfo.IME_ACTION_NEXT);
+        mTxtConfirmPassword.setImeOptions(EditorInfo.IME_ACTION_DONE);
+
+        mTxtOldPassword.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
+                if (id == R.id.action_next || id == EditorInfo.IME_NULL) {
+                    mTxtNewPassword.requestFocus();
+                    return true;
+                }
+                return false;
+            }
+        });
+
+        mTxtNewPassword.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
+                if (id == R.id.action_next || id == EditorInfo.IME_NULL) {
+                    mTxtConfirmPassword.requestFocus();
+                    return true;
+                }
+                return false;
+            }
+        });
+
+        mTxtConfirmPassword.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
+                if (id == R.id.action_submit_pass_change || id == EditorInfo.IME_NULL) {
+                    pressedSubmitChangePassword();
+                    return true;
+                }
+                return false;
+            }
+        });
+
+        mTxtFeedback.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
+                if (id == R.id.action_submit_feedback || id == EditorInfo.IME_NULL) {
+                    pressedSubmitFeedback();
+                    return true;
+                }
+                return false;
+            }
+        });
+
 
         mFeedbackButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -364,19 +435,67 @@ public class NavigationDrawerFragment extends Fragment {
 
     public void pressedSubmitFeedback() {
         System.out.println("pressed sub feed");
+        if (mTxtFeedback.length() > 10) {
+            disableAll();
+            ConnectionHandler.submitFeedback(new FeedbackHandler(), mTxtFeedback.getText().toString());
+        } else {
+            mTxtFeedback.setError(getString(R.string.minimum_length));
+        }
     }
     public void pressedSubmitChangePassword() {
         System.out.println("pressed sub change pass");
-
+        if (mTxtOldPassword.length() < 6) {
+            mTxtOldPassword.setError(getString(R.string.invalid_password));
+        } else if (mTxtNewPassword.length() < 6) {
+            mTxtNewPassword.setError(getString(R.string.invalid_password));
+        } else if (!mTxtConfirmPassword.getText().toString().equals(mTxtNewPassword.getText().toString())) {
+            mTxtConfirmPassword.setError(getString(R.string.password_mismatch));
+        } else {
+            ConnectionHandler.updatePassword(new ChangePassHandler(), ConnectionHandler.loadEmail(), mTxtNewPassword.getText().toString(), mTxtOldPassword.getText().toString());
+        }
     }
 
     public void pressedFeedback() {
         System.out.println("pressed feed");
-
+        if (mIsChangingPassword) {
+            hideChangePassword();
+            showFeedback();
+        } else if (mIsWritingFeedback) {
+            hideFeedback();
+        } else {
+            showFeedback();
+        }
     }
 
     public void pressedChangePassword() {
         System.out.println("pressed change pass");
+        if (mIsChangingPassword) {
+            hideChangePassword();
+        } else if (mIsWritingFeedback) {
+            hideFeedback();
+            showChangePassword();
+        } else {
+            showChangePassword();
+        }
+
+    }
+
+    private void showChangePassword() {
+        BounceInterpolator bounceInterpolator = new BounceInterpolator();
+        ObjectAnimator anim = ObjectAnimator.ofFloat(mChangePassContainer, "scaleY", 40f, 160);
+        anim.setInterpolator(bounceInterpolator);
+        anim.setDuration(1100).start();
+    }
+
+    private void hideChangePassword() {
+
+    }
+
+    private void showFeedback() {
+
+    }
+
+    private void hideFeedback() {
 
     }
 
@@ -453,6 +572,38 @@ public class NavigationDrawerFragment extends Fragment {
         mOffBoxNotifications.setEnabled(false);
         mTutorialButton.setEnabled(false);
         mLogoutButton.setEnabled(false);
+    }
+
+    public class FeedbackHandler implements CallbackGeneral {
+        @Override
+        public void callback(final boolean success, final String error) {
+            mMainActivity.runOnUiThread(new Runnable() {
+                public void run() {
+                    Log.d("UI thread", "I am the UI thread");
+                    if (success) {
+                        //do nothing
+                    } else {
+
+                    }
+                }
+            });
+        }
+    }
+
+    public class ChangePassHandler implements CallbackGeneral {
+        @Override
+        public void callback(final boolean success, final String error) {
+            mMainActivity.runOnUiThread(new Runnable() {
+                public void run() {
+                    Log.d("UI thread", "I am the UI thread");
+                    if (success) {
+                        //do nothing
+                    } else {
+
+                    }
+                }
+            });
+        }
     }
 
 

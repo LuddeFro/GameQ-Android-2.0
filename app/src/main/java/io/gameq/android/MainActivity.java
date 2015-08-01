@@ -2,7 +2,9 @@ package io.gameq.android;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.CountDownTimer;
+import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -30,18 +32,48 @@ public class MainActivity extends ActionBarActivity
      */
     private NavigationDrawerFragment mNavigationDrawerFragment;
     public Activity myself;
-
+    private boolean bolGotStatus = true;
     private TextView mTextViewCountdown;
     private TextView mTextViewStatus;
     private TextView mTextViewGame;
     private ProgressBar mCountdownBar;
     private ProgressBar mSpinBar;
     private CountDownTimer mCountdownTimer;
+    private AlphaAnimation mAlphaAnimator;
     private final int barMax = 1000;
+    private Status mLastStatus;
+    private final String TAG = "MainActivity";
+
+    private int mInterval = 3000; //milliseconds
+    private Handler mHandler;
+
+
+    private Runnable mStatusChecker = new Runnable() {
+        @Override
+        public void run() {
+            if (bolGotStatus) {
+                Log.i(TAG, "getStatusTick");
+                bolGotStatus = false;
+                ConnectionHandler.getStatus(new StatusGetter());
+            }
+            mHandler.postDelayed(mStatusChecker, mInterval);
+        }
+    };
+
+    void startRepeatingTask() {
+        mStatusChecker.run();
+    }
+
+    void stopRepeatingTask() {
+        mHandler.removeCallbacks(mStatusChecker);
+    }
+    ////////
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mHandler = new Handler();
         ConnectionHandler.instantiateDataModel(getApplicationContext());
         myself = this;
         Intent startIntent = getIntent();
@@ -89,9 +121,87 @@ public class MainActivity extends ActionBarActivity
         mCountdownBar.setProgress(1);
         mSpinBar.setAlpha(0);
         mCountdownBar.setAlpha(0);
-
+        startRepeatingTask();
 
     }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        stopRepeatingTask();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        startRepeatingTask();
+    }
+
+
+    public class StatusGetter implements CallbackGetStatus {
+        @Override
+        public void callback(final boolean success, final String error, final int status, final int game, final long acceptBefore) {
+            myself.runOnUiThread(new Runnable() {
+                public void run() {
+                    Log.d("UI thread", "I am the UI thread");
+                    bolGotStatus = true;
+                    if (success) {
+
+                        mTextViewStatus.setText(Encoding.getStringFromGameStatus(game, status));
+                        mTextViewGame.setText(Encoding.getStringFromGame(game));
+                        switch (Encoding.getStatusFromInt(status)) {
+                            case OFFLINE:
+                                //båda av
+                                stopReadyCountdownAt(0);
+                                mSpinBar.setAlpha(0);
+                                mSpinBar.setProgress(barMax / 10);
+                                break;
+                            case ONLINE:
+                                stopReadyCountdownAt(0);
+                                mSpinBar.setAlpha(0);
+                                mSpinBar.setProgress(barMax / 10);
+                                break;
+                            case IN_LOBBY:
+                                //båda av
+                                stopReadyCountdownAt(0);
+                                mSpinBar.setAlpha(0);
+                                mSpinBar.setProgress(barMax / 10);
+                                break;
+                            case IN_QUEUE:
+                                //blå snurra
+                                //röd av
+                                stopReadyCountdownAt(0);
+                                mSpinBar.setAlpha(1);
+                                mSpinBar.setProgress(barMax / 10);
+                                break;
+                            case GAME_READY:
+                                //röd börja
+                                //helblå
+                                startCountdown(acceptBefore);
+                                mSpinBar.setAlpha(1);
+                                mSpinBar.setProgress(barMax);
+                                break;
+                            case IN_GAME:
+                                //helorange
+                                //helblå
+                                stopReadyCountdownAt(barMax);
+                                mSpinBar.setAlpha(1);
+                                mSpinBar.setProgress(barMax);
+                                break;
+                        }
+
+
+
+                        mLastStatus = Encoding.getStatusFromInt(status);
+
+                    } else {
+                        //do nothing
+                    }
+                }
+            });
+        }
+    }
+
 
     public class AutoLoginHandler implements CallbackGeneral {
         @Override
@@ -109,8 +219,6 @@ public class MainActivity extends ActionBarActivity
                     }
                 }
             });
-
-
         }
     }
 
@@ -216,12 +324,33 @@ public class MainActivity extends ActionBarActivity
 
 
 
+    private void stopReadyCountdownAt(int atPromille) {
+        if (mCountdownTimer != null) {
+            mCountdownTimer.cancel();
+        }
+        mSpinBar.setAlpha(0);
+        mCountdownBar.setProgress(atPromille*barMax/1000);
+        if (mAlphaAnimator != null) {
+            mAlphaAnimator.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+                    mTextViewCountdown.setText(getString(R.string.invisible_string));
+                }
+                @Override
+                public void onAnimationEnd(Animation anim) {            }
+                @Override
+                public void onAnimationRepeat(Animation animation) {            }
+            });
+        }
 
+
+    }
 
     private void startCountdown(long to) {
         long fromL = to - ConnectionHandler.serverDelay - (System.currentTimeMillis() / 1000L);
         int from = (int) fromL;
         countDown(from);
+        startTimer(from);
         mCountdownBar.setAlpha(1);
         mSpinBar.setAlpha(1);
 
@@ -235,9 +364,9 @@ public class MainActivity extends ActionBarActivity
             return;
         }
 
-        AlphaAnimation animation = new AlphaAnimation(1.0f, 0.0f);
-        animation.setDuration(1000);
-        animation.setAnimationListener(new Animation.AnimationListener() {
+        mAlphaAnimator = new AlphaAnimation(1.0f, 0.0f);
+        mAlphaAnimator.setDuration(1000);
+        mAlphaAnimator.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
                 mTextViewCountdown.setText(String.valueOf(count));
@@ -253,18 +382,17 @@ public class MainActivity extends ActionBarActivity
 
             }
         });
-        mTextViewCountdown.startAnimation(animation);
+        mTextViewCountdown.startAnimation(mAlphaAnimator);
     }
 
     private void startTimer(final int seconds) {
         mCountdownTimer = new CountDownTimer(seconds * 1000, 100) {
-            // 500 means, onTick function will be called at every 500 milliseconds
+            // 100 means, onTick function will be called at every 100 milliseconds
 
             @Override
             public void onTick(long leftTimeInMilliseconds) {
                 int barVal = barMax * ((int)leftTimeInMilliseconds/((seconds)*1000));
                 mCountdownBar.setProgress(barVal);
-                // format the textview to show the easily readable format
             }
             @Override
             public void onFinish() {

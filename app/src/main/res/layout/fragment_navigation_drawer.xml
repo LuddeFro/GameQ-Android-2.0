@@ -9,8 +9,8 @@ android:paddingLeft="@dimen/activity_horizontal_margin"
 android:paddingRight="@dimen/activity_horizontal_margin"
 android:paddingTop="@dimen/activity_vertical_margin"
 android:background="#FF4C5A6D"
-android:gravity="bottom|top"
-    android:padding="0dp">
+    android:padding="0dp"
+    android:gravity="bottom|top">
 
     <RelativeLayout android:id="@+id/header_container"
     android:layout_width="match_parent"
@@ -128,34 +128,46 @@ android:gravity="bottom|top"
         android:paddingLeft="10dp">
 
         <TextView android:id="@+id/feedback_label" android:layout_width="wrap_content"
-        android:layout_height="20dp"
+        android:layout_height="30dp"
         android:textColor="#FFd6dfe6"
         android:text="@string/title_section3"
         android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-        android:layout_alignParentLeft="true" />
+        android:layout_alignParentLeft="true"
+            android:gravity="center_vertical"
+            android:layout_alignParentTop="true" />
 
 
         <Button android:id="@+id/feedback_button"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="30dp"
             android:background="#00000000"
             android:stateListAnimator="@null"
             android:enabled="true" />
 
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:id="@+id/feedback_edit_text"
+            android:inputType="textMultiLine"
+            android:imeActionId="@+id/action_submit_feedback"
+            android:layout_below="@+id/feedback_button"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
         <Button
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="30dp"
             android:text="@string/submit"
             android:id="@+id/feedback_submit_button"
-            android:layout_alignRight="@+id/feedback_button"
-            android:layout_alignEnd="@+id/feedback_button"
-            android:layout_alignParentBottom="true"
             android:textColor="#FFFFFFFF"
             android:background="#FFFF6861"
-            android:enabled="false"
-            android:alpha="0"
-            android:visibility="gone" />
+            android:enabled="true"
+            android:alpha="1"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"/>
+
 
 
     </RelativeLayout>
@@ -178,33 +190,63 @@ android:gravity="bottom|top"
         android:paddingLeft="10dp">
 
     <TextView android:id="@+id/change_password_label" android:layout_width="wrap_content"
-        android:layout_height="20dp"
+        android:layout_height="30dp"
         android:textColor="#FFd6dfe6"
         android:text="@string/title_section4"
+        android:gravity="center_vertical"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:layout_alignParentLeft="true" />
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"/>
 
         <Button android:id="@+id/change_password_button"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="30dp"
             android:background="#00000000"
             android:stateListAnimator="@null"
-            android:enabled="true" />
+            android:enabled="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"/>
+
+
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:inputType="textPassword"
+            android:imeActionId="@+id/action_next"
+            android:ems="10"
+            android:id="@+id/change_password_old_pass"
+            android:layout_below="@+id/change_password_button"/>
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:inputType="textPassword"
+            android:imeActionId="@+id/action_next"
+            android:ems="10"
+            android:id="@+id/change_password_new_pass"
+            android:layout_below="@+id/change_password_old_pass"/>
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:inputType="textPassword"
+            android:imeActionId="@+id/action_submit_pass_change"
+            android:ems="10"
+            android:id="@+id/change_password_confirm_pass"
+            android:layout_below="@+id/change_password_new_pass"/>
 
         <Button
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="30dp"
             android:text="@string/submit"
             android:id="@+id/change_password_submit_button"
-            android:layout_alignRight="@+id/change_password_button"
-            android:layout_alignEnd="@+id/change_password_button"
             android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
             android:textColor="#FFFFFFFF"
             android:background="#FFFF6861"
-            android:enabled="false"
-            android:alpha="0"
-            android:visibility="gone" />
+            android:alpha="1" />
+
 
     </RelativeLayout>
     <View android:layout_width="match_parent"

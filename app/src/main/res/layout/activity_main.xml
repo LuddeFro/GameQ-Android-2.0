@@ -44,8 +44,10 @@
             android:layout_below="@+id/textViewGame"
             android:layout_marginTop="10dp"
             android:layout_alignLeft="@+id/textViewGame"
-            android:layout_alignStart="@+id/textViewGame"
-            android:textColor="#FFb6bfc6"/>
+            android:textColor="#FFb6bfc6"
+            android:gravity="center_horizontal"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -55,7 +57,10 @@
             android:layout_below="@+id/progressBar"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="20dp"
-            android:textColor="#FFb6bfc6"/>
+            android:textColor="#FFb6bfc6"
+            android:gravity="center_horizontal"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true" />
 
         <TextView
             android:layout_width="wrap_content"

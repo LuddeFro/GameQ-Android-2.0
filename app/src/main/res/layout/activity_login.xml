@@ -6,7 +6,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="io.gameq.android.LoginActivity"
-    android:background="#FF4C5A6D"
+    android:background="@color/MainGray"
     android:gravity="bottom">
 
     <!-- Login progress -->
@@ -19,11 +19,12 @@
         android:gravity="bottom">
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
             android:id="@+id/imageView"
-            android:layout_gravity="center_horizontal"
-            android:contentDescription="@string/logo_alt" />
+            android:layout_gravity="center_horizontal|top"
+            android:contentDescription="@string/logo_alt"
+            android:src="@drawable/logo" />
 
         <AutoCompleteTextView android:id="@+id/email" android:layout_width="match_parent"
             android:layout_height="wrap_content" android:hint="@string/prompt_email"
@@ -31,7 +32,9 @@
             android:singleLine="true"
             android:backgroundTint="#FFFFFFFF"
             android:textColorHint="#FFb6bfc6"
-            android:textColor="#FFFFFF" />
+            android:textColor="#FFFFFF"
+            android:drawableLeft="@drawable/mail"
+            android:drawablePadding="5dp"/>
 
         <EditText android:id="@+id/password" android:layout_width="match_parent"
             android:layout_height="wrap_content" android:hint="@string/prompt_password"
@@ -41,7 +44,9 @@
             android:maxLines="1" android:singleLine="true"
             android:backgroundTint="#FFFFFFFF"
             android:textColor="#FFFFFFFF"
-            android:textColorHint="#FFb6bfc6" />
+            android:textColorHint="#FFb6bfc6"
+            android:drawableLeft="@drawable/lock"
+            android:drawablePadding="5dp" />
 
         <EditText android:id="@+id/confirm_password" android:layout_width="match_parent"
             android:layout_height="wrap_content" android:hint="@string/prompt_password"
@@ -55,13 +60,15 @@
             android:layout_marginBottom="70dp"
             android:alpha="0"
             android:enabled="false"
-            android:editable="false" />
+            android:editable="false"
+            android:drawableLeft="@drawable/lock"
+            android:drawablePadding="5dp" />
 
         <Button android:id="@+id/login_button_top" style="?android:textAppearanceSmall"
             android:layout_width="match_parent" android:layout_height="50dp"
             android:layout_marginTop="10dp" android:text="@string/action_sign_in"
             android:textStyle="bold"
-            android:background="#FFFF6861"
+            android:background="@color/Orange"
             android:textColor="#FFFFFFFF" />
 
         <Button android:id="@+id/login_button_bottom" style="?android:textAppearanceSmall"
@@ -70,7 +77,7 @@
             android:layout_marginTop="15dp" android:text="@string/action_register"
             android:textStyle="bold"
             android:background="#FFFFFFFF"
-            android:textColor="#FFFF6861" />
+            android:textColor="#e65b4c" />
 
         <Button android:id="@+id/login_button_forgot" style="?android:textAppearanceSmall"
             android:layout_width="match_parent" android:layout_height="20sp"

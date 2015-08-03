@@ -1,7 +1,12 @@
 package io.gameq.android;
 
+import android.animation.LayoutTransition;
 import android.animation.ObjectAnimator;
+import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.media.Image;
+import android.net.Uri;
 import android.support.v7.app.ActionBarActivity;
 import android.app.Activity;
 import android.support.v7.app.ActionBar;
@@ -14,6 +19,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -21,13 +27,17 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.view.animation.BounceInterpolator;
+import android.view.animation.Transformation;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -91,6 +101,10 @@ public class NavigationDrawerFragment extends Fragment {
     private RelativeLayout mChangePassContainer;
     private RelativeLayout mFeedbackContainer;
 
+    private ImageButton mFacebookButton;
+    private ImageButton mTwitterButton;
+    private ImageButton mEmailButton;
+
 
     public Activity mMainActivity;
 
@@ -152,6 +166,12 @@ public class NavigationDrawerFragment extends Fragment {
         mTxtOldPassword = (EditText) mDrawerRelativeLayout.findViewById(R.id.change_password_old_pass);
         mChangePassContainer = (RelativeLayout) mDrawerRelativeLayout.findViewById(R.id.change_password_container);
         mFeedbackContainer = (RelativeLayout) mDrawerRelativeLayout.findViewById(R.id.feedback_container);
+        mFacebookButton = (ImageButton) mDrawerRelativeLayout.findViewById(R.id.facebook_button);
+        mTwitterButton = (ImageButton) mDrawerRelativeLayout.findViewById(R.id.twitter_button);
+        mEmailButton = (ImageButton) mDrawerRelativeLayout.findViewById(R.id.mail_button);
+
+
+
 
         mTxtFeedback.setImeOptions(EditorInfo.IME_ACTION_DONE);
         mTxtOldPassword.setImeOptions(EditorInfo.IME_ACTION_NEXT);
@@ -253,6 +273,24 @@ public class NavigationDrawerFragment extends Fragment {
             }
         });
 
+        mFacebookButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                pressedFacebook();
+            }
+        });
+
+        mTwitterButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                pressedTwitter();
+            }
+        });
+
+        mEmailButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                pressedEmail();
+            }
+        });
+
         ConnectionHandler.loadShouldReceiveNotifications();
         if (ConnectionHandler.loadShouldReceiveNotifications()) {
             mOnBoxNotifications.setChecked(false);
@@ -301,6 +339,8 @@ public class NavigationDrawerFragment extends Fragment {
             @Override
             public void onDrawerClosed(View drawerView) {
                 super.onDrawerClosed(drawerView);
+                InputMethodManager imm = (InputMethodManager) mMainActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(mMainActivity.getCurrentFocus().getWindowToken(), 0);
                 if (!isAdded()) {
                     return;
                 }
@@ -312,6 +352,8 @@ public class NavigationDrawerFragment extends Fragment {
             public void onDrawerOpened(View drawerView) {
                 System.out.println("OPENED DRAWER");
                 super.onDrawerOpened(drawerView);
+                InputMethodManager imm = (InputMethodManager) mMainActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(mMainActivity.getCurrentFocus().getWindowToken(), 0);
                 if (!isAdded()) {
                     return;
                 }
@@ -430,6 +472,34 @@ public class NavigationDrawerFragment extends Fragment {
 
 
 
+    public void pressedFacebook() {
+        try {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("fb://profile/304122193079686"));
+            intent.setPackage("com.facebook.katana");
+            startActivity(intent);
+        } catch(Exception e) {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.facebook.com/GameQApp")));
+        }
+    }
+
+    public void pressedTwitter() {
+        try {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("twitter://user?screen_name=GameQApp"));
+            startActivity(intent);
+
+        }catch (Exception e) {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://twitter.com/#!/GameQApp")));
+        }
+    }
+
+    public void pressedEmail() {
+        Intent send = new Intent(Intent.ACTION_SENDTO);
+        String uriText = "mailto:" + Uri.encode("contact@gameq.com") + "?subject=" + Uri.encode("Contact from Android") + "&body=" + Uri.encode("Dear GameQ Team, ");
+        Uri uri = Uri.parse(uriText);
+
+        send.setData(uri);
+        startActivity(Intent.createChooser(send, "Send mail..."));
+    }
 
 
 
@@ -456,47 +526,80 @@ public class NavigationDrawerFragment extends Fragment {
     }
 
     public void pressedFeedback() {
+        InputMethodManager imm = (InputMethodManager) mMainActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(mMainActivity.getCurrentFocus().getWindowToken(), 0);
         System.out.println("pressed feed");
         if (mIsChangingPassword) {
             hideChangePassword();
             showFeedback();
+            mIsWritingFeedback = true;
         } else if (mIsWritingFeedback) {
+            mIsWritingFeedback = false;
             hideFeedback();
         } else {
             showFeedback();
+            mIsWritingFeedback = true;
         }
+        mIsChangingPassword = false;
     }
 
     public void pressedChangePassword() {
+        InputMethodManager imm = (InputMethodManager) mMainActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(mMainActivity.getCurrentFocus().getWindowToken(), 0);
         System.out.println("pressed change pass");
         if (mIsChangingPassword) {
             hideChangePassword();
+            mIsChangingPassword = false;
         } else if (mIsWritingFeedback) {
             hideFeedback();
+            mIsChangingPassword = true;
             showChangePassword();
         } else {
+            mIsChangingPassword = true;
             showChangePassword();
         }
+        mIsWritingFeedback = false;
 
     }
 
     private void showChangePassword() {
-        BounceInterpolator bounceInterpolator = new BounceInterpolator();
-        ObjectAnimator anim = ObjectAnimator.ofFloat(mChangePassContainer, "scaleY", 40f, 160);
-        anim.setInterpolator(bounceInterpolator);
-        anim.setDuration(1100).start();
+        Resources r = getResources();
+        float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 190, r.getDisplayMetrics());
+        //mChangePassContainer.animate().scaleY(2f);
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mChangePassContainer.getLayoutParams();
+        params.height = (int) px;
+        mChangePassContainer.setLayoutParams(params);
+        mSubmitChangePasswordButton.setVisibility(View.VISIBLE);
     }
 
     private void hideChangePassword() {
-
+        Resources r = getResources();
+        float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 40, r.getDisplayMetrics());
+        //mChangePassContainer.animate().scaleY(2f);
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mChangePassContainer.getLayoutParams();
+        params.height = (int) px;
+        mChangePassContainer.setLayoutParams(params);
+        mSubmitChangePasswordButton.setVisibility(View.GONE);
     }
 
     private void showFeedback() {
-
+        Resources r = getResources();
+        float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 140, r.getDisplayMetrics());
+        //mChangePassContainer.animate().scaleY(2f);
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mFeedbackContainer.getLayoutParams();
+        params.height = (int) px;
+        mFeedbackContainer.setLayoutParams(params);
+        mSubmitFeedbackButton.setVisibility(View.VISIBLE);
     }
 
     private void hideFeedback() {
-
+        Resources r = getResources();
+        float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 40, r.getDisplayMetrics());
+        //mChangePassContainer.animate().scaleY(2f);
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mFeedbackContainer.getLayoutParams();
+        params.height = (int) px;
+        mFeedbackContainer.setLayoutParams(params);
+        mSubmitFeedbackButton.setVisibility(View.GONE);
     }
 
     public void pressedTutorial() {
@@ -605,6 +708,14 @@ public class NavigationDrawerFragment extends Fragment {
             });
         }
     }
+
+
+
+
+
+
+
+
 
 
 

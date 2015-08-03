@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+
+ <color name="MainGray">#17212b</color>
+    <color name="navTopGray">#0d1623</color>
+    <color name="navBackgroundGray">#121b28</color>
+    <color name="fadedTimerGray">#34404d</color>
+    <color name="readyGreen">#2ecc71</color>
+    <color name="Orange">#e65b4c</color>
+    <color name="LightBlue">#7dbae3</color>
+    <color name="facebookBlue">#3b5998</color>
+    <color name="twitterBlue">#4099FF</color>
+    <color name="mailRed">#e65b4c</color>
+</resources>
+
+

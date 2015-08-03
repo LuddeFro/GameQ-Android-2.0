@@ -2,7 +2,20 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="match_parent"
     android:paddingLeft="60dp"
-    android:paddingRight="60dp">
+    android:paddingRight="60dp"
+    android:background="@color/navTopGray">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="29dp"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/step_1"
+        android:id="@+id/textView3"
+        android:gravity="center"
+        android:textColor="#FFFFFF"
+        android:layout_marginBottom="0dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="45dp"
+        android:layout_alignParentTop="true" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -10,10 +23,11 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/tut_title_3"
         android:id="@+id/textView"
-        android:layout_alignParentTop="true"
+        android:layout_below="@id/textView3"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="118dp"
-        android:gravity="center"/>
+        android:layout_marginTop="0dp"
+        android:gravity="center"
+        android:textColor="#FFFFFF" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -21,8 +35,24 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="@string/tut_text_3"
         android:id="@+id/textView2"
-        android:layout_centerVertical="true"
+        android:gravity="center"
+        android:textColor="#FFFFFF"
+        android:lines="2"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="100dp"
+        android:layout_centerHorizontal="true" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageView2"
+        android:layout_below="@id/textView"
+        android:layout_above="@id/textView2"
         android:layout_centerHorizontal="true"
-        android:gravity="center" />
+        android:layout_marginTop="25dp"
+        android:layout_marginBottom="25dp"
+        android:src="@drawable/tut_login"
+        android:contentDescription="@string/dummy"
+        android:gravity="center"/>
 
 </RelativeLayout>

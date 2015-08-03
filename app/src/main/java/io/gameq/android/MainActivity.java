@@ -1,7 +1,12 @@
 package io.gameq.android;
 
 import android.app.Activity;
+import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -19,9 +24,19 @@ import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.animation.RotateAnimation;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.google.android.gms.iid.InstanceID;
+
+import java.io.IOException;
 
 
 public class MainActivity extends ActionBarActivity
@@ -40,12 +55,19 @@ public class MainActivity extends ActionBarActivity
     private ProgressBar mSpinBar;
     private CountDownTimer mCountdownTimer;
     private AlphaAnimation mAlphaAnimator;
+    private RelativeLayout mCrosshair;
     private final int barMax = 1000;
     private Status mLastStatus;
     private final String TAG = "MainActivity";
 
     private int mInterval = 3000; //milliseconds
     private Handler mHandler;
+    private Animation mCrosshairRotationAnimation;
+    private boolean isRotatingCrosshair = false;
+
+    GoogleCloudMessaging gcm;
+    protected Dialog dialog;
+    protected static final String PROPERTY_APP_VERSION = "appVersion";
 
 
     private Runnable mStatusChecker = new Runnable() {
@@ -76,6 +98,10 @@ public class MainActivity extends ActionBarActivity
         mHandler = new Handler();
         ConnectionHandler.instantiateDataModel(getApplicationContext());
         myself = this;
+
+
+
+
         Intent startIntent = getIntent();
         if (!startIntent.getBooleanExtra(getString(R.string.intent_inhouse_extra), false)) {
             if (ConnectionHandler.loadEmail() == "") {
@@ -86,6 +112,7 @@ public class MainActivity extends ActionBarActivity
                 ConnectionHandler.loginWithRememberedDetails(new AutoLoginHandler());
             }
         }
+
 
 
 
@@ -102,6 +129,10 @@ public class MainActivity extends ActionBarActivity
 
         mNavigationDrawerFragment.mMainActivity = this;
 
+        ProgressBar back1Bar = (ProgressBar) findViewById(R.id.progressBarBackground);
+        ProgressBar back2Bar = (ProgressBar) findViewById(R.id.spinBarBackground);
+        back1Bar.setProgress(back1Bar.getMax() - 1);
+        back2Bar.setProgress(back2Bar.getMax() - 1);
 
         mCountdownBar = (ProgressBar) findViewById(R.id.progressBar);
         Animation an = new RotateAnimation(0.0f, 270.0f, 200f, 200f);
@@ -112,17 +143,23 @@ public class MainActivity extends ActionBarActivity
         mTextViewCountdown = (TextView) findViewById(R.id.textViewCountdown);
         mTextViewGame = (TextView) findViewById(R.id.textViewGame);
         mTextViewStatus = (TextView) findViewById(R.id.textViewStatus);
-
+        mCrosshair = (RelativeLayout) findViewById(R.id.crosshair_container);
         mTextViewStatus.setText(getString(R.string.invisible_string));
         mTextViewGame.setText(getString(R.string.invisible_string));
         mTextViewCountdown.setText(getString(R.string.invisible_string));
 
-        mSpinBar.setProgress(1);
+        mSpinBar.setProgress(mSpinBar.getMax() / 10);
         mCountdownBar.setProgress(1);
         mSpinBar.setAlpha(0);
         mCountdownBar.setAlpha(0);
         startRepeatingTask();
 
+        mCrosshairRotationAnimation = AnimationUtils.loadAnimation(this, R.anim.rotate_indefinitely);
+        mSpinBar.startAnimation(AnimationUtils.loadAnimation(this, R.anim.rotate_indefinitely_right));
+        mCrosshair.startAnimation(mCrosshairRotationAnimation);
+        mCrosshair.getAnimation().cancel();
+        mCrosshair.getAnimation().reset();
+        //isRotatingCrosshair == false
     }
 
     @Override
@@ -135,6 +172,16 @@ public class MainActivity extends ActionBarActivity
     protected void onResume() {
         super.onResume();
         startRepeatingTask();
+        if (!checkPlayServices()) {
+            Log.i(TAG, "!checkPlayServices() returns true in onCreate() Activity Master");
+        } else {
+            gcm = GoogleCloudMessaging.getInstance(this);
+            String regid = getRegistrationId(myself.getApplicationContext());
+
+            if (regid.isEmpty()) {
+                registerInBackground();
+            }
+        }
     }
 
 
@@ -155,17 +202,29 @@ public class MainActivity extends ActionBarActivity
                                 stopReadyCountdownAt(0);
                                 mSpinBar.setAlpha(0);
                                 mSpinBar.setProgress(barMax / 10);
+                                if (isRotatingCrosshair) {
+                                    mCrosshair.getAnimation().setRepeatCount(0);
+                                    isRotatingCrosshair = !isRotatingCrosshair;
+                                }
                                 break;
                             case ONLINE:
                                 stopReadyCountdownAt(0);
                                 mSpinBar.setAlpha(0);
                                 mSpinBar.setProgress(barMax / 10);
+                                if (!isRotatingCrosshair) {
+                                    mCrosshair.startAnimation(mCrosshairRotationAnimation);
+                                    isRotatingCrosshair = !isRotatingCrosshair;
+                                }
                                 break;
                             case IN_LOBBY:
                                 //båda av
                                 stopReadyCountdownAt(0);
                                 mSpinBar.setAlpha(0);
                                 mSpinBar.setProgress(barMax / 10);
+                                if (!isRotatingCrosshair) {
+                                    mCrosshair.startAnimation(mCrosshairRotationAnimation);
+                                    isRotatingCrosshair = !isRotatingCrosshair;
+                                }
                                 break;
                             case IN_QUEUE:
                                 //blå snurra
@@ -173,6 +232,10 @@ public class MainActivity extends ActionBarActivity
                                 stopReadyCountdownAt(0);
                                 mSpinBar.setAlpha(1);
                                 mSpinBar.setProgress(barMax / 10);
+                                if (!isRotatingCrosshair) {
+                                    mCrosshair.startAnimation(mCrosshairRotationAnimation);
+                                    isRotatingCrosshair = !isRotatingCrosshair;
+                                }
                                 break;
                             case GAME_READY:
                                 //röd börja
@@ -180,6 +243,10 @@ public class MainActivity extends ActionBarActivity
                                 startCountdown(acceptBefore);
                                 mSpinBar.setAlpha(1);
                                 mSpinBar.setProgress(barMax);
+                                if (!isRotatingCrosshair) {
+                                    mCrosshair.startAnimation(mCrosshairRotationAnimation);
+                                    isRotatingCrosshair = !isRotatingCrosshair;
+                                }
                                 break;
                             case IN_GAME:
                                 //helorange
@@ -187,6 +254,10 @@ public class MainActivity extends ActionBarActivity
                                 stopReadyCountdownAt(barMax);
                                 mSpinBar.setAlpha(1);
                                 mSpinBar.setProgress(barMax);
+                                if (!isRotatingCrosshair) {
+                                    mCrosshair.startAnimation(mCrosshairRotationAnimation);
+                                    isRotatingCrosshair = !isRotatingCrosshair;
+                                }
                                 break;
                         }
 
@@ -216,6 +287,22 @@ public class MainActivity extends ActionBarActivity
                         intent.putExtra(getString(R.string.intent_inhouse_extra), true);
                         startActivity(intent);
                         System.out.println(error);
+                    }
+                }
+            });
+        }
+    }
+
+    public class StatusUpdateHandler implements CallbackGeneral {
+        @Override
+        public void callback(final boolean success, final String error) {
+            myself.runOnUiThread(new Runnable() {
+                public void run() {
+                    Log.d("UI thread", "I am the UI thread");
+                    if (success) {
+                        //do nothing
+                    } else {
+                        //do nothing
                     }
                 }
             });
@@ -328,7 +415,6 @@ public class MainActivity extends ActionBarActivity
         if (mCountdownTimer != null) {
             mCountdownTimer.cancel();
         }
-        mSpinBar.setAlpha(0);
         mCountdownBar.setProgress(atPromille*barMax/1000);
         if (mAlphaAnimator != null) {
             mAlphaAnimator.setAnimationListener(new Animation.AnimationListener() {
@@ -352,8 +438,6 @@ public class MainActivity extends ActionBarActivity
         countDown(from);
         startTimer(from);
         mCountdownBar.setAlpha(1);
-        mSpinBar.setAlpha(1);
-
     }
 
 
@@ -402,6 +486,139 @@ public class MainActivity extends ActionBarActivity
 
     }
 
+
+
+
+
+
+
+
+
+    /**
+     * Check the device to make sure it has the Google Play Services APK. If
+     * it doesn't, display a dialog that allows users to download the APK from
+     * the Google Play Store or enable it in the device's system settings.
+     */
+    protected boolean checkPlayServices() {
+        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+        Log.i(TAG, "checkGooglePlayServicesAvailable, connectionStatusCode="
+                + resultCode);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
+                showGooglePlayServicesAvailabilityErrorDialog(resultCode);
+                //GooglePlayServicesUtil.getErrorDialog(resultCode, this,
+                //PLAY_SERVICES_RESOLUTION_REQUEST).show();
+            } else {
+                Log.i(TAG, "This device is not supported.");
+                finish();
+            }
+            return false;
+        }
+        return true;
+    }
+    private void showGooglePlayServicesAvailabilityErrorDialog(
+            final int connectionStatusCode) {
+        this.runOnUiThread(new Runnable() {
+            public void run() {
+                dialog = GooglePlayServicesUtil.getErrorDialog(
+                        connectionStatusCode, myself,
+                        0);
+                if (dialog == null) {
+                    Log.e(TAG,
+                            "couldn't get GooglePlayServicesUtil.getErrorDialog");
+                    Toast.makeText(myself.getApplicationContext(),
+                            "incompatible version of Google Play Services",
+                            Toast.LENGTH_LONG).show();
+                }
+                dialog.show();
+            }
+        });
+    }
+
+
+    /**
+     * Gets the current registration ID for application on GCM service.
+     * <p>
+     * If result is empty, the app needs to register.
+     *
+     * @return registration ID, or empty string if there is no existing
+     *         registration ID.
+     */
+    protected String getRegistrationId(Context context) {
+        String token = ConnectionHandler.loadToken();
+        SharedPreferences dataGetter = getPreferences(Context.MODE_PRIVATE);
+        if (token == null || token.isEmpty()) {
+            Log.i(TAG, "Registration not found.");
+            return "";
+        }
+        // Check if app was updated; if so, it must clear the registration ID
+        // since the existing regID is not guaranteed to work with the new
+        // app version.
+        int registeredVersion = dataGetter.getInt(PROPERTY_APP_VERSION, Integer.MIN_VALUE);
+        int currentVersion = getAppVersion(context);
+        if (registeredVersion != currentVersion) {
+            Log.i(TAG, "App version changed.");
+            return "";
+        }
+        return token;
+    }
+
+
+    protected static int getAppVersion(Context context) {
+        try {
+            PackageInfo packageInfo = context.getPackageManager()
+                    .getPackageInfo(context.getPackageName(), 0);
+            return packageInfo.versionCode;
+        } catch (PackageManager.NameNotFoundException e) {
+            // should never happen
+            throw new RuntimeException("Could not get package name: " + e);
+        }
+    }
+
+
+    /**
+     * Registers the application with GCM servers asynchronously.
+     * <p>
+     * Stores the registration ID and app versionCode in the application's
+     * shared preferences.
+     */
+    protected void registerInBackground() {
+        new AsyncTask<Void, Void, String>() {
+            @Override
+            protected String doInBackground(Void... params) {
+                String msg = "";
+                try {
+                    if (gcm == null) {
+                        gcm = GoogleCloudMessaging.getInstance(myself.getApplicationContext());
+                    }
+                    String regid = gcm.register(getString(R.string.gcm_sender_id));
+                    msg = "Device registered, registration ID=" + regid;
+
+                    if (ConnectionHandler.loadEmail() != null && ConnectionHandler.loadEmail() != "") {
+                        //logged in probably
+                        ConnectionHandler.updateToken(new StatusUpdateHandler(), regid);
+                    } else {
+                        ConnectionHandler.saveToken(regid);
+                    }
+
+                    SharedPreferences dataGetter = getPreferences(Context.MODE_PRIVATE);
+                    SharedPreferences.Editor dataSetter = dataGetter.edit();
+                    dataSetter.putInt(PROPERTY_APP_VERSION, getAppVersion(myself.getApplicationContext()));
+                    dataSetter.commit();
+
+                } catch (IOException ex) {
+                    msg = "Error :" + ex.getMessage();
+
+                }
+                return msg;
+            }
+
+            @Override
+            protected void onPostExecute(String msg) {
+
+            }
+        }.execute(null, null, null);
+    }
 
 
 

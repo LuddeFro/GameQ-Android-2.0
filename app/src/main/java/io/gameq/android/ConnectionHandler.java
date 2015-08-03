@@ -263,7 +263,7 @@ public final class ConnectionHandler {
             JSONHolder holder = new JSONHolder();
             @Override
             protected Void doInBackground(Void... params) {
-                String response = post("versionControl", "push_token="+mToken+"&session_token=" + ConnectionHandler.sessionToken + "&device_id=" + ConnectionHandler.loadDeviceID());
+                String response = post("updateToken", "push_token="+mToken+"&session_token=" + ConnectionHandler.sessionToken + "&device_id=" + ConnectionHandler.loadDeviceID());
                 holder.populate(response);
                 mCaller.callback(holder.success, holder.error);
                 return null;
@@ -280,7 +280,7 @@ public final class ConnectionHandler {
             JSONHolder holder = new JSONHolder();
             @Override
             protected Void doInBackground(Void... params) {
-                String response = post("versionControl", "csv="+mCSV+"&game="+mGame+"&type="+mType+"&session_token=" + ConnectionHandler.sessionToken + "&device_id=" + ConnectionHandler.loadDeviceID());
+                String response = post("submitCSV", "csv="+mCSV+"&game="+mGame+"&type="+mType+"&session_token=" + ConnectionHandler.sessionToken + "&device_id=" + ConnectionHandler.loadDeviceID());
                 holder.populate(response);
                 mCaller.callback(holder.success, holder.error);
                 return null;
@@ -295,7 +295,7 @@ public final class ConnectionHandler {
             JSONHolder holder = new JSONHolder();
             @Override
             protected Void doInBackground(Void... params) {
-                String response = post("versionControl", "feedback="+mFeedback+"&session_token=" + ConnectionHandler.sessionToken + "&device_id=" + ConnectionHandler.loadDeviceID());
+                String response = post("submitFeedback", "feedback="+mFeedback+"&session_token=" + ConnectionHandler.sessionToken + "&device_id=" + ConnectionHandler.loadDeviceID());
                 holder.populate(response);
                 mCaller.callback(holder.success, holder.error);
                 return null;
@@ -312,7 +312,7 @@ public final class ConnectionHandler {
             JSONHolder holder = new JSONHolder();
             @Override
             protected Void doInBackground(Void... params) {
-                String response = post("versionControl", "email="+mEmail+"&password="+mOldPassword+"&new_password="+mNewPassword+"&session_token=" + ConnectionHandler.sessionToken + "&device_id=" + ConnectionHandler.loadDeviceID());
+                String response = post("updatePassword", "email="+mEmail+"&password="+mOldPassword+"&new_password="+mNewPassword+"&session_token=" + ConnectionHandler.sessionToken + "&device_id=" + ConnectionHandler.loadDeviceID());
                 holder.populate(response);
                 mCaller.callback(holder.success, holder.error);
                 return null;
@@ -391,7 +391,7 @@ public final class ConnectionHandler {
         preferences.put("email", email);
     }
 
-    private static void saveToken(String token) {
+    public static void saveToken(String token) {
         preferences.put("token", token);
     }
 
@@ -433,7 +433,7 @@ public final class ConnectionHandler {
         }
     }
 
-    private static String loadToken() {
+    public static String loadToken() {
         if (preferences.getString("token") == null) {
             return "";
         }

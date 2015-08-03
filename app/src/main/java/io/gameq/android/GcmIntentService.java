@@ -111,7 +111,7 @@ public class GcmIntentService extends IntentService {
 
             NotificationCompat.Builder mBuilder =
                     new NotificationCompat.Builder(this)
-                            //.setSmallIcon(R.drawable.ic_stat_gcm) TODO fix all this shit
+                            .setSmallIcon(R.drawable.logo)
                             .setContentTitle("GameQ")
                             .setStyle(new NotificationCompat.BigTextStyle()
                                     // Vibrate if vibrate is enabled

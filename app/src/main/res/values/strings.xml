@@ -16,9 +16,9 @@
     <string name="unknown">Unknown</string>
     <string name="submit">Submit</string>
 
-
+    <string name="dummy">content description unavailable</string>
     <string name="minimum_length">Minimum 6 characters</string>
-
+    <string name="gcm_sender_id">773141536608</string>
 
     <!-- Strings related to login -->
     <string name="title_activity_login">Sign in</string>
@@ -40,15 +40,19 @@
 
     <!-- Strings related to tutorial -->
 
-    <string name="tut_title_1">GameQ</string>
-    <string name="tut_title_2">Get The Desktop Client</string>
-    <string name="tut_title_3">Features</string>
-    <string name="tut_title_4">Go Poop</string>
+    <string name="step_1">Step 1</string>
+    <string name="step_2">Step 2</string>
+    <string name="step_3">Step 3</string>
 
-    <string name="tut_text_1">Welcome to GameQ.\nAnd Welcome to never again worrying about missing a match.</string>
-    <string name="tut_text_2">To get started make sure you install and sign in to the desktop client as well. It can be downloaded from our website at: \'www.GameQ.io\'.</string>
-    <string name="tut_text_3">GameQ currently supports queue tracking for 5 games. You can expect new additions every month.</string>
-    <string name="tut_text_4">You can rest assured that you will be notified when the action starts. Make a sandwich, visit the bathroom, or do anything really&#8230; GameQ will bring you back when duty calls.</string>
+    <string name="tut_title_1">Congratulations!</string>
+    <string name="tut_title_2">Download \&amp; Install</string>
+    <string name="tut_title_3">Sign In</string>
+    <string name="tut_title_4">Enjoy</string>
+
+    <string name="tut_text_1">You are one of the first to make gaming simpler with GameQ!</string>
+    <string name="tut_text_2">Get the computer client at www.gameq.io</string>
+    <string name="tut_text_3">Use your GameQ account to sign in on your computer</string>
+    <string name="tut_text_4">Relish every second you save. You could do anything...</string>
 
     <string name="tut_done">Go to App!</string>
 <string name="title_activity_tutorial">What is GameQ?</string>

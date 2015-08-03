@@ -7,8 +7,19 @@
     <!-- As the main content view, the view below consumes the entire
          space available using match_parent in both dimensions. -->
     <RelativeLayout android:id="@+id/container" android:layout_width="match_parent"
-        android:layout_height="match_parent" android:background="#FF4C5A6D">
+        android:layout_height="match_parent" android:background="@color/MainGray">
 
+        <ProgressBar
+            android:id="@+id/progressBarBackground"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_centerInParent="true"
+            android:indeterminate="false"
+            android:max="1000"
+            android:progress="1000"
+            android:progressDrawable="@drawable/circular_progress_bar_background"
+            android:layout_gravity="center" />
 
         <ProgressBar
             android:id="@+id/progressBar"
@@ -20,6 +31,21 @@
             android:max="1000"
             android:progress="1000"
             android:progressDrawable="@drawable/circular_progress_bar"
+            android:layout_gravity="center" />
+
+
+
+        <ProgressBar
+            android:id="@+id/spinBarBackground"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="180dp"
+            android:layout_height="180dp"
+
+            android:layout_centerInParent="true"
+            android:indeterminate="false"
+            android:max="1000"
+            android:progress="1000"
+            android:progressDrawable="@drawable/circular_progress_bar_background"
             android:layout_gravity="center" />
 
         <ProgressBar
@@ -34,6 +60,54 @@
             android:progress="1000"
             android:progressDrawable="@drawable/circular_progress_bar_blue"
             android:layout_gravity="center" />
+
+        <RelativeLayout
+            android:layout_width="220dp"
+            android:layout_height="220dp"
+            android:layout_centerInParent="true"
+            android:id="@+id/crosshair_container">
+
+            <ImageView
+                android:layout_width="4dp"
+                android:layout_height="20dp"
+                android:id="@+id/crosshair1"
+                android:layout_centerHorizontal="true"
+                android:contentDescription="@string/dummy"
+                android:layout_alignParentTop="true"
+                android:background="@color/LightBlue" />
+
+            <ImageView
+                android:layout_width="4dp"
+                android:layout_height="20dp"
+                android:id="@+id/crosshair2"
+                android:layout_centerHorizontal="true"
+                android:contentDescription="@string/dummy"
+                android:layout_alignParentBottom="true"
+                android:background="@color/LightBlue" />
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="4dp"
+                android:id="@+id/crosshair3"
+                android:layout_centerVertical="true"
+                android:contentDescription="@string/dummy"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true"
+                android:background="@color/LightBlue" />
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="4dp"
+                android:id="@+id/crosshair4"
+                android:layout_centerVertical="true"
+                android:background="@color/LightBlue"
+                android:contentDescription="@string/dummy"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true" />
+
+        </RelativeLayout>
+
+
 
         <TextView
             android:layout_width="wrap_content"
@@ -71,6 +145,18 @@
             android:layout_centerHorizontal="true"
             android:textSize="50sp"
             android:textColor="#FFFFFFFF" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/imageView3"
+            android:layout_above="@+id/progressBar"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="47dp"
+            android:layout_marginTop="20dp"
+            android:src="@drawable/logo"
+            android:cropToPadding="false"
+            android:contentDescription="@string/dummy" />
 
     </RelativeLayout>
 

@@ -339,7 +339,7 @@ android:background="@color/navBackgroundGray"
             android:id="@+id/twitter_button"
             android:layout_centerVertical="true"
             android:layout_centerHorizontal="true"
-            android:background="@drawable/twitter_bkg"
+            android:background="@drawable/twitter_full"
             android:layout_marginLeft="15dp"
             android:layout_marginRight="15dp"
             android:contentDescription="@string/dummy" />
@@ -351,7 +351,7 @@ android:background="@color/navBackgroundGray"
             android:layout_centerVertical="true"
             android:layout_toRightOf="@+id/twitter_button"
             android:layout_toEndOf="@+id/twitter_button"
-            android:background="@drawable/mail_bkg"
+            android:background="@drawable/mail_full"
             android:contentDescription="@string/dummy" />
 
         <ImageButton
@@ -361,52 +361,12 @@ android:background="@color/navBackgroundGray"
             android:layout_centerVertical="true"
             android:layout_toLeftOf="@+id/twitter_button"
             android:layout_toStartOf="@+id/twitter_button"
-            android:background="@drawable/facebook_bkg"
+            android:background="@drawable/facebook_full"
             android:contentDescription="@string/dummy" />
 
 
 
-        <ImageView
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:src="@drawable/twitter"
-            android:id="@+id/twitter_logo"
-            android:layout_centerVertical="true"
-            android:layout_alignTop="@id/twitter_button"
-            android:layout_centerHorizontal="true"
-            android:layout_marginLeft="31dp"
-            android:layout_marginStart="31dp"
-            android:cropToPadding="false"
-            android:contentDescription="@string/dummy"
-            android:layout_marginTop="7.5dp"
-            android:clickable="true" />
 
-        <ImageView
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:id="@+id/imageView4"
-            android:layout_alignParentBottom="false"
-            android:layout_toEndOf="@+id/twitter_logo"
-            android:src="@drawable/mailwhite"
-            android:layout_alignLeft="@+id/mail_button"
-            android:layout_centerVertical="true"
-            android:padding="15dp"
-            android:layout_alignRight="@+id/mail_button"
-            android:layout_alignBottom="@+id/mail_button"
-            android:layout_alignTop="@+id/mail_button"
-            android:contentDescription="@string/dummy" />
-
-        <ImageView
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:id="@+id/imageView5"
-            android:layout_alignTop="@+id/facebook_button"
-            android:layout_alignRight="@+id/facebook_button"
-            android:contentDescription="@string/dummy"
-            android:padding="15dp"
-            android:src="@drawable/facebook"
-            android:layout_alignBottom="@+id/facebook_button"
-            android:layout_alignLeft="@+id/facebook_button" />
 
     </RelativeLayout>
 

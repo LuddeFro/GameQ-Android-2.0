@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/facebook_bkg" android:id="@+id/rounded_corners"/>
+    <item android:drawable="@drawable/facebook" android:id="@+id/additional_image" android:bottom="7.5dp" android:top="7.5dp" android:left="16dp" android:right="16dp"/>
+</layer-list>

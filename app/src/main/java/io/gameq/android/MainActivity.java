@@ -56,7 +56,7 @@ public class MainActivity extends ActionBarActivity
     private CountDownTimer mCountdownTimer;
     private AlphaAnimation mAlphaAnimator;
     private RelativeLayout mCrosshair;
-    private final int barMax = 1000;
+    private final int barMax = 10000;
     private Status mLastStatus;
     private final String TAG = "MainActivity";
 
@@ -100,8 +100,6 @@ public class MainActivity extends ActionBarActivity
         myself = this;
 
 
-
-
         Intent startIntent = getIntent();
         if (!startIntent.getBooleanExtra(getString(R.string.intent_inhouse_extra), false)) {
             if (ConnectionHandler.loadEmail() == "") {
@@ -122,12 +120,12 @@ public class MainActivity extends ActionBarActivity
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
 
 
+        mNavigationDrawerFragment.mMainActivity = this;
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
-        mNavigationDrawerFragment.mMainActivity = this;
 
         ProgressBar back1Bar = (ProgressBar) findViewById(R.id.progressBarBackground);
         ProgressBar back2Bar = (ProgressBar) findViewById(R.id.spinBarBackground);
@@ -135,8 +133,7 @@ public class MainActivity extends ActionBarActivity
         back2Bar.setProgress(back2Bar.getMax() - 1);
 
         mCountdownBar = (ProgressBar) findViewById(R.id.progressBar);
-        Animation an = new RotateAnimation(0.0f, 270.0f, 200f, 200f);
-        an.setFillAfter(true);
+        Animation an = AnimationUtils.loadAnimation(this, R.anim.rotate270);
         mCountdownBar.startAnimation(an);
         mSpinBar = (ProgressBar) findViewById(R.id.spinBar);
 
@@ -160,6 +157,13 @@ public class MainActivity extends ActionBarActivity
         mCrosshair.getAnimation().cancel();
         mCrosshair.getAnimation().reset();
         //isRotatingCrosshair == false
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        mNavigationDrawerFragment.mDrawerToggle.syncState();
     }
 
     @Override
@@ -201,6 +205,7 @@ public class MainActivity extends ActionBarActivity
                                 //båda av
                                 stopReadyCountdownAt(0);
                                 mSpinBar.setAlpha(0);
+                                mCountdownBar.setAlpha(0);
                                 mSpinBar.setProgress(barMax / 10);
                                 if (isRotatingCrosshair) {
                                     mCrosshair.getAnimation().setRepeatCount(0);
@@ -210,6 +215,7 @@ public class MainActivity extends ActionBarActivity
                             case ONLINE:
                                 stopReadyCountdownAt(0);
                                 mSpinBar.setAlpha(0);
+                                mCountdownBar.setAlpha(0);
                                 mSpinBar.setProgress(barMax / 10);
                                 if (!isRotatingCrosshair) {
                                     mCrosshair.startAnimation(mCrosshairRotationAnimation);
@@ -220,6 +226,7 @@ public class MainActivity extends ActionBarActivity
                                 //båda av
                                 stopReadyCountdownAt(0);
                                 mSpinBar.setAlpha(0);
+                                mCountdownBar.setAlpha(0);
                                 mSpinBar.setProgress(barMax / 10);
                                 if (!isRotatingCrosshair) {
                                     mCrosshair.startAnimation(mCrosshairRotationAnimation);
@@ -231,6 +238,7 @@ public class MainActivity extends ActionBarActivity
                                 //röd av
                                 stopReadyCountdownAt(0);
                                 mSpinBar.setAlpha(1);
+                                mCountdownBar.setAlpha(0);
                                 mSpinBar.setProgress(barMax / 10);
                                 if (!isRotatingCrosshair) {
                                     mCrosshair.startAnimation(mCrosshairRotationAnimation);
@@ -240,12 +248,17 @@ public class MainActivity extends ActionBarActivity
                             case GAME_READY:
                                 //röd börja
                                 //helblå
-                                startCountdown(acceptBefore);
-                                mSpinBar.setAlpha(1);
-                                mSpinBar.setProgress(barMax);
-                                if (!isRotatingCrosshair) {
-                                    mCrosshair.startAnimation(mCrosshairRotationAnimation);
-                                    isRotatingCrosshair = !isRotatingCrosshair;
+                                if (mLastStatus == Status.GAME_READY) {
+
+                                } else {
+                                    startCountdown(acceptBefore);
+                                    mSpinBar.setAlpha(1);
+                                    mCountdownBar.setAlpha(1);
+                                    mSpinBar.setProgress(barMax);
+                                    if (!isRotatingCrosshair) {
+                                        mCrosshair.startAnimation(mCrosshairRotationAnimation);
+                                        isRotatingCrosshair = !isRotatingCrosshair;
+                                    }
                                 }
                                 break;
                             case IN_GAME:
@@ -253,6 +266,7 @@ public class MainActivity extends ActionBarActivity
                                 //helblå
                                 stopReadyCountdownAt(barMax);
                                 mSpinBar.setAlpha(1);
+                                mCountdownBar.setAlpha(1);
                                 mSpinBar.setProgress(barMax);
                                 if (!isRotatingCrosshair) {
                                     mCrosshair.startAnimation(mCrosshairRotationAnimation);
@@ -411,21 +425,27 @@ public class MainActivity extends ActionBarActivity
 
 
 
-    private void stopReadyCountdownAt(int atPromille) {
+    private void stopReadyCountdownAt(int ofTenThousand) {
         if (mCountdownTimer != null) {
             mCountdownTimer.cancel();
         }
-        mCountdownBar.setProgress(atPromille*barMax/1000);
+        mCountdownBar.setProgress(ofTenThousand);
+
+
         if (mAlphaAnimator != null) {
             mAlphaAnimator.setAnimationListener(new Animation.AnimationListener() {
                 @Override
                 public void onAnimationStart(Animation animation) {
                     mTextViewCountdown.setText(getString(R.string.invisible_string));
                 }
+
                 @Override
-                public void onAnimationEnd(Animation anim) {            }
+                public void onAnimationEnd(Animation anim) {
+                }
+
                 @Override
-                public void onAnimationRepeat(Animation animation) {            }
+                public void onAnimationRepeat(Animation animation) {
+                }
             });
         }
 
@@ -447,13 +467,13 @@ public class MainActivity extends ActionBarActivity
             mTextViewCountdown.setText("");
             return;
         }
-
+        mTextViewCountdown.setText(String.valueOf(count));
         mAlphaAnimator = new AlphaAnimation(1.0f, 0.0f);
         mAlphaAnimator.setDuration(1000);
         mAlphaAnimator.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
-                mTextViewCountdown.setText(String.valueOf(count));
+
             }
 
             @Override
@@ -475,12 +495,15 @@ public class MainActivity extends ActionBarActivity
 
             @Override
             public void onTick(long leftTimeInMilliseconds) {
-                int barVal = barMax * ((int)leftTimeInMilliseconds/((seconds)*1000));
+                int barVal = (int) ((double) barMax * (((double) (((seconds)*1000) - (int)leftTimeInMilliseconds))/((double) ((seconds)*1000))));
+                if (barVal >= barMax) {
+                    stopReadyCountdownAt(barMax);
+                }
                 mCountdownBar.setProgress(barVal);
             }
             @Override
             public void onFinish() {
-
+                stopReadyCountdownAt(barMax);
             }
         }.start();
 

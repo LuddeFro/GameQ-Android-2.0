@@ -86,7 +86,7 @@ android:background="@color/navBackgroundGray"
         android:background="#FF34404d"
         android:layout_alignBottom="@id/notification_container"/>
 
-        <RelativeLayout android:id="@+id/auto_accept_container"
+    <RelativeLayout android:id="@+id/auto_accept_container"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_alignParentRight="true"
@@ -100,14 +100,42 @@ android:background="@color/navBackgroundGray"
             android:paddingRight="10dp"
             android:paddingLeft="10dp">
 
-    <TextView android:id="@+id/auto_accept_label" android:layout_width="wrap_content"
+        <TextView android:id="@+id/auto_accept_label" android:layout_width="wrap_content"
         android:layout_height="20dp"
-        android:textColor="#FF969fa6"
+        android:textColor="#FFd6dfe6"
         android:text="@string/title_section2"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
         android:layout_alignParentLeft="true"/>
-        </RelativeLayout>
+
+
+        <CheckBox
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:id="@+id/off_box_3"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+
+            android:layout_alignParentEnd="true"
+            android:checked="true"
+            android:button="@drawable/check_box_red"/>
+
+        <CheckBox
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:id="@+id/on_box_3"
+            android:layout_marginRight="15dp"
+            android:layout_alignTop="@+id/off_box_3"
+            android:layout_toLeftOf="@+id/off_box_3"
+            android:layout_toStartOf="@+id/off_box_3"
+            android:checked="false"
+            android:button="@drawable/check_box_green" />
+
+
+
+
+
+    </RelativeLayout>
 
     <View android:layout_width="match_parent"
         android:layout_height="0.5dp"

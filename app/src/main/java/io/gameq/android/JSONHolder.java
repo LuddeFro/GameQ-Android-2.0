@@ -13,6 +13,7 @@ public class JSONHolder {
     String session_token;
     String current_version;
     String download_link;
+    String ip;
     int game;
     int status;
     long accept_before;
@@ -46,6 +47,7 @@ public class JSONHolder {
             session_token = "";
             current_version = "";
             download_link = "";
+            ip = "127.0.0.1";
             time = System.currentTimeMillis() / 1000L;
             return;
         }
@@ -98,6 +100,11 @@ public class JSONHolder {
             time = jObject.getInt("time");
         } catch (JSONException e) {
             time = System.currentTimeMillis() / 1000L;
+        }
+        try {
+            ip = jObject.getString("ip");
+        } catch (JSONException e) {
+            ip = "127.0.0.1";
         }
     }
 }

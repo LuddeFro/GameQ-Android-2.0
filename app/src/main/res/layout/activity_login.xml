@@ -10,6 +10,13 @@
     android:gravity="bottom">
 
     <!-- Login progress -->
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/btn_resign_keyboard"
+        android:background="#00000000" />
+
     <ProgressBar android:id="@+id/login_progress" style="?android:attr/progressBarStyleLarge"
         android:layout_width="wrap_content" android:layout_height="wrap_content"
         android:visibility="gone"
@@ -19,7 +26,8 @@
     <LinearLayout android:id="@+id/email_login_form" android:layout_width="match_parent"
         android:layout_height="match_parent" android:orientation="vertical"
         android:gravity="bottom"
-        android:layout_centerInParent="true">
+        android:layout_centerInParent="true"
+        android:elevation="2dp">
 
         <ImageView
             android:layout_width="80dp"
@@ -37,7 +45,7 @@
             android:textColorHint="#FFb6bfc6"
             android:textColor="#FFFFFF"
             android:drawableLeft="@drawable/mail"
-            android:drawablePadding="5dp"/>
+            android:drawablePadding="5dp" />
 
         <EditText android:id="@+id/password" android:layout_width="match_parent"
             android:layout_height="wrap_content" android:hint="@string/prompt_password"

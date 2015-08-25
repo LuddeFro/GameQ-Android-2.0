@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">GameQ</string>
     <string name="logo_alt">GameQ Logo</string>
-    <string name="title_section1">Enable Notifications</string>
-    <string name="title_section2">Auto Accept (Coming Soon)</string>
+    <string name="title_section1">Notifications</string>
+    <string name="title_section2">Auto Accept</string>
     <string name="title_section3">Feedback</string>
     <string name="title_section4">Change Password</string>
     <string name="title_section5">How to use GameQ</string>
@@ -15,7 +15,9 @@
     <string name="action_settings">Settings</string>
     <string name="unknown">Unknown</string>
     <string name="submit">Submit</string>
-
+    <string name="accept">Accept</string>
+    <string name="decline">Decline</string>
+    <string name="suggest_accept">Accept time is short, use auto accept?</string>
     <string name="dummy">content description unavailable</string>
     <string name="minimum_length">Minimum 6 characters</string>
     <string name="gcm_sender_id">773141536608</string>

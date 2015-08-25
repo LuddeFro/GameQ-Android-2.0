@@ -109,6 +109,10 @@ public class GcmIntentService extends IntentService {
             PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
                     new Intent(this, MainActivity.class), 0);
 
+//          alternative may stop app from launching
+//            PendingIntent contentIntent =
+//                    PendingIntent.getActivity(getApplicationContext(), 0, new Intent(), 0);
+
             NotificationCompat.Builder mBuilder =
                     new NotificationCompat.Builder(this)
                             .setSmallIcon(R.drawable.logo)
@@ -116,13 +120,16 @@ public class GcmIntentService extends IntentService {
                             .setStyle(new NotificationCompat.BigTextStyle()
                                     // Vibrate if vibrate is enabled
                                     .bigText(msg))
+                            .setAutoCancel(true)
                             .setContentText(msg);
-            mBuilder.setVibrate(new long[] { 0, 1500, 500, 1500 });
-            Uri uri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+            mBuilder.setVibrate(new long[]{0, 1500, 500, 1500});
+            Uri uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
             mBuilder.setSound(uri);
             mBuilder.setLights(0xFFFF6861, 300, 300);
             mBuilder.setContentIntent(contentIntent);
             mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
+
+
 
             //PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
 

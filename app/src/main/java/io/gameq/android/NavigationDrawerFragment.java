@@ -85,6 +85,8 @@ public class NavigationDrawerFragment extends Fragment {
 
     private CheckBox mOnBoxNotifications;
     private CheckBox mOffBoxNotifications;
+    private CheckBox mOnBoxAutoAccept;
+    private CheckBox mOffBoxAutoAccept;
     private Button mFeedbackButton;
     private Button mChangePasswordButton;
     private Button mSubmitFeedbackButton;
@@ -154,6 +156,8 @@ public class NavigationDrawerFragment extends Fragment {
 
         mOnBoxNotifications = (CheckBox) mDrawerRelativeLayout.findViewById(R.id.on_box);
         mOffBoxNotifications = (CheckBox) mDrawerRelativeLayout.findViewById(R.id.off_box);
+        mOnBoxAutoAccept = (CheckBox) mDrawerRelativeLayout.findViewById(R.id.on_box_3);
+        mOffBoxAutoAccept = (CheckBox) mDrawerRelativeLayout.findViewById(R.id.off_box_3);
         mFeedbackButton = (Button) mDrawerRelativeLayout.findViewById(R.id.feedback_button);
         mChangePasswordButton = (Button) mDrawerRelativeLayout.findViewById(R.id.change_password_button);
         mSubmitFeedbackButton = (Button) mDrawerRelativeLayout.findViewById(R.id.feedback_submit_button);
@@ -268,6 +272,19 @@ public class NavigationDrawerFragment extends Fragment {
         });
 
 
+        mOnBoxAutoAccept.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                pressedTurnOnAutoAccept();
+            }
+        });
+
+        mOffBoxAutoAccept.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                pressedTurnOffAutoAccept();
+            }
+        });
+
+
         mOnBoxNotifications.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 pressedTurnOnNotifications();
@@ -371,6 +388,11 @@ public class NavigationDrawerFragment extends Fragment {
                 }
 
                 getActivity().supportInvalidateOptionsMenu(); // calls onPrepareOptionsMenu()
+
+                ConnectionHandler.getAutoAccept(new GetAutoAcceptHandler());
+
+
+
             }
         };
         mDrawerToggle.syncState();
@@ -659,12 +681,30 @@ public class NavigationDrawerFragment extends Fragment {
     }
 
     public void pressedTurnOffNotifications() {
-        Log.i(TAG, "pressed notifs off");
+        Log.i(TAG, "pressed notifs offbox");
         mOnBoxNotifications.setChecked(false);
         ConnectionHandler.saveShouldReceiveNotifications(false);
         mOffBoxNotifications.setChecked(true);
 
     }
+
+    public void pressedTurnOnAutoAccept() {
+        Log.i(TAG, "pressed accept onbox");
+        mOffBoxAutoAccept.setChecked(false);
+        ConnectionHandler.updateAutoAccept(true, new UpdateAutoAcceptHandler());
+        mOnBoxAutoAccept.setChecked(true);
+    }
+
+    public void pressedTurnOffAutoAccept() {
+        Log.i(TAG, "pressed accept offbox");
+        mOnBoxAutoAccept.setChecked(false);
+        ConnectionHandler.updateAutoAccept(false, new UpdateAutoAcceptHandler());
+        mOffBoxAutoAccept.setChecked(true);
+
+    }
+
+
+
 
     private void enableAll() {
         mFeedbackButton.setEnabled(true);
@@ -714,6 +754,42 @@ public class NavigationDrawerFragment extends Fragment {
                         //do nothing
                     } else {
 
+                    }
+                }
+            });
+        }
+    }
+
+    public class UpdateAutoAcceptHandler implements CallbackGeneral {
+        @Override
+        public void callback(final boolean success, final String error) {
+            mMainActivity.runOnUiThread(new Runnable() {
+                public void run() {
+                    Log.d("UI thread", "I am the UI thread");
+                    if (success) {
+                        //do nothing
+                    } else {
+                        mOnBoxAutoAccept.setChecked(!mOnBoxAutoAccept.isChecked());
+                        mOffBoxAutoAccept.setChecked(!mOffBoxAutoAccept.isChecked());
+                        Log.e("UI thread", "autoAcceptUpdateFailed because of error: " + error);
+                    }
+                }
+            });
+        }
+    }
+
+    public class GetAutoAcceptHandler implements CallbackAutoAccept {
+        @Override
+        public void callback(final boolean enabled) {
+            mMainActivity.runOnUiThread(new Runnable() {
+                public void run() {
+                    Log.d("UI thread", "I am the UI thread");
+                    if (enabled) {
+                        mOnBoxAutoAccept.setChecked(true);
+                        mOffBoxAutoAccept.setChecked(false);
+                    } else {
+                        mOnBoxAutoAccept.setChecked(false);
+                        mOffBoxAutoAccept.setChecked(true);
                     }
                 }
             });

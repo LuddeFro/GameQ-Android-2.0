@@ -29,6 +29,7 @@
             android:layout_centerInParent="true"
             android:indeterminate="false"
             android:max="10000"
+            android:rotation="270"
             android:progress="10000"
             android:progressDrawable="@drawable/circular_progress_bar"
             android:layout_gravity="center"
@@ -161,6 +162,101 @@
             android:src="@drawable/logo"
             android:cropToPadding="false"
             android:contentDescription="@string/dummy" />
+
+        <LinearLayout android:id="@+id/aa_vertical_layout" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:orientation="vertical"
+            android:gravity="bottom"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/textViewStatus"
+            android:layout_alignParentBottom="true">
+
+            <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="@string/suggest_accept"
+            android:id="@+id/textViewSuggestAutoAccept"
+            android:textColor="#FFb6bfc6"
+                android:gravity="top"
+                android:layout_gravity="center_horizontal"
+                android:alpha="0"
+                android:visibility="gone" />
+
+            <LinearLayout android:id="@+id/aa_horizontal_layout" android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:orientation="horizontal"
+            android:gravity="bottom"
+                android:layout_gravity="center_horizontal"
+                android:padding="5dp"
+                android:paddingBottom="15dp">
+                <CheckBox
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:id="@+id/checkBoxAutoAcceptOn"
+            android:gravity="center_vertical|center_horizontal"
+                    android:button="@drawable/check_box_green"
+                    android:enabled="false"
+                    android:alpha="0"
+                    android:layout_marginRight="5dp"
+                    android:visibility="gone" />
+
+                <CheckBox
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:id="@+id/checkBoxAutoAcceptOff"
+            android:gravity="center_vertical|center_horizontal"
+                    android:button="@drawable/check_box_red"
+                    android:enabled="false"
+                    android:alpha="0"
+                    android:layout_marginLeft="5dp"
+                    android:visibility="gone" />
+
+
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout android:id="@+id/ad_horizontal_layout" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:orientation="horizontal"
+            android:gravity="center_horizontal|bottom"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center_horizontal"
+            android:layout_below="@id/textViewStatus"
+            android:layout_alignParentBottom="true"
+            android:padding="10dp">
+
+            <Button
+            android:layout_width="100dp"
+
+            android:layout_height="40dp"
+                android:layout_marginRight="10dp"
+            android:text="@string/accept"
+            android:background="@color/readyGreen"
+            android:id="@+id/btn_accept"
+                android:enabled="false"
+                android:alpha="0"
+                android:textColor="#FFFFFF"
+                android:visibility="gone" />
+
+            <Button
+            android:layout_width="100dp"
+            android:layout_height="40dp"
+                android:layout_marginLeft="10dp"
+            android:text="@string/decline"
+            android:background="@color/Orange"
+            android:id="@+id/btn_decline"
+                android:enabled="false"
+                android:alpha="0"
+                android:textColor="#FFFFFF"
+                android:visibility="gone" />
+
+        </LinearLayout>
+
+
+
+
+
+
 
     </RelativeLayout>
 

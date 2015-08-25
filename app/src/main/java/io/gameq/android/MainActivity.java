@@ -3,6 +3,7 @@ package io.gameq.android;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -15,7 +16,9 @@ import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,6 +29,8 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.RotateAnimation;
+import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -35,6 +40,8 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
+
+import org.w3c.dom.Text;
 
 import java.io.IOException;
 
@@ -59,15 +66,26 @@ public class MainActivity extends ActionBarActivity
     private final int barMax = 10000;
     private Status mLastStatus;
     private final String TAG = "MainActivity";
+    private boolean lastQueueActionAccept = true;
 
     private int mInterval = 3000; //milliseconds
     private Handler mHandler;
     private Animation mCrosshairRotationAnimation;
     private boolean isRotatingCrosshair = false;
-
     GoogleCloudMessaging gcm;
     protected Dialog dialog;
     protected static final String PROPERTY_APP_VERSION = "appVersion";
+
+    private boolean bolAutoAcceptIsDeflated = true;
+    private boolean bolAcceptButtonsAreDeflated = true;
+
+
+
+    private CheckBox mCbxAutoAcceptEnabled;
+    private CheckBox mCbxAutoAcceptDisabled;
+    private Button mBtnAccept;
+    private Button mBtnDecline;
+    private TextView mLblSuggestAutoAccept;
 
 
     private Runnable mStatusChecker = new Runnable() {
@@ -133,9 +151,34 @@ public class MainActivity extends ActionBarActivity
         back2Bar.setProgress(back2Bar.getMax() - 1);
 
         mCountdownBar = (ProgressBar) findViewById(R.id.progressBar);
-        Animation an = AnimationUtils.loadAnimation(this, R.anim.rotate270);
-        mCountdownBar.startAnimation(an);
         mSpinBar = (ProgressBar) findViewById(R.id.spinBar);
+
+        mCbxAutoAcceptEnabled = (CheckBox) findViewById(R.id.checkBoxAutoAcceptOn);
+        mCbxAutoAcceptDisabled = (CheckBox) findViewById(R.id.checkBoxAutoAcceptOff);
+        mBtnAccept = (Button) findViewById(R.id.btn_accept);
+        mBtnDecline  = (Button) findViewById(R.id.btn_decline);
+        mLblSuggestAutoAccept = (TextView) findViewById(R.id.textViewSuggestAutoAccept);
+
+        mBtnAccept.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                pressedAccept();
+            }
+        });
+        mBtnDecline.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                pressedDecline();
+            }
+        });
+        mCbxAutoAcceptEnabled.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                pressedTurnOnAutoNotifications();
+            }
+        });
+        mCbxAutoAcceptDisabled.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                pressedTurnOffAutoNotifications();
+            }
+        });
 
         mTextViewCountdown = (TextView) findViewById(R.id.textViewCountdown);
         mTextViewGame = (TextView) findViewById(R.id.textViewGame);
@@ -156,7 +199,6 @@ public class MainActivity extends ActionBarActivity
         mCrosshair.startAnimation(mCrosshairRotationAnimation);
         mCrosshair.getAnimation().cancel();
         mCrosshair.getAnimation().reset();
-        //isRotatingCrosshair == false
     }
 
     @Override
@@ -169,8 +211,23 @@ public class MainActivity extends ActionBarActivity
     @Override
     protected void onPause() {
         super.onPause();
+        dialog.dismiss();
         stopRepeatingTask();
     }
+
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event)  {
+        if (keyCode == KeyEvent.KEYCODE_BACK ) {
+            if (mNavigationDrawerFragment.isDrawerOpen()) {
+                ((DrawerLayout) findViewById(R.id.drawer_layout)).closeDrawers();
+                return true;
+            }
+        }
+
+        return super.onKeyDown(keyCode, event);
+    }
+
 
     @Override
     protected void onResume() {
@@ -207,6 +264,8 @@ public class MainActivity extends ActionBarActivity
                                 mSpinBar.setAlpha(0);
                                 mCountdownBar.setAlpha(0);
                                 mSpinBar.setProgress(barMax / 10);
+                                deflateAccept();
+                                deflateAutoAccept();
                                 if (isRotatingCrosshair) {
                                     mCrosshair.getAnimation().setRepeatCount(0);
                                     isRotatingCrosshair = !isRotatingCrosshair;
@@ -217,6 +276,8 @@ public class MainActivity extends ActionBarActivity
                                 mSpinBar.setAlpha(0);
                                 mCountdownBar.setAlpha(0);
                                 mSpinBar.setProgress(barMax / 10);
+                                deflateAccept();
+                                deflateAutoAccept();
                                 if (!isRotatingCrosshair) {
                                     mCrosshair.startAnimation(mCrosshairRotationAnimation);
                                     isRotatingCrosshair = !isRotatingCrosshair;
@@ -228,6 +289,8 @@ public class MainActivity extends ActionBarActivity
                                 mSpinBar.setAlpha(0);
                                 mCountdownBar.setAlpha(0);
                                 mSpinBar.setProgress(barMax / 10);
+                                deflateAccept();
+                                deflateAutoAccept();
                                 if (!isRotatingCrosshair) {
                                     mCrosshair.startAnimation(mCrosshairRotationAnimation);
                                     isRotatingCrosshair = !isRotatingCrosshair;
@@ -240,6 +303,12 @@ public class MainActivity extends ActionBarActivity
                                 mSpinBar.setAlpha(1);
                                 mCountdownBar.setAlpha(0);
                                 mSpinBar.setProgress(barMax / 10);
+                                deflateAccept();
+                                if (Encoding.getGameFromInt(game) == Game.LOL) {
+                                    inflateAutoAccept();
+                                } else {
+                                    deflateAutoAccept();
+                                }
                                 if (!isRotatingCrosshair) {
                                     mCrosshair.startAnimation(mCrosshairRotationAnimation);
                                     isRotatingCrosshair = !isRotatingCrosshair;
@@ -255,6 +324,8 @@ public class MainActivity extends ActionBarActivity
                                     mSpinBar.setAlpha(1);
                                     mCountdownBar.setAlpha(1);
                                     mSpinBar.setProgress(barMax);
+                                    deflateAutoAccept();
+                                    inflateAccept();
                                     if (!isRotatingCrosshair) {
                                         mCrosshair.startAnimation(mCrosshairRotationAnimation);
                                         isRotatingCrosshair = !isRotatingCrosshair;
@@ -268,6 +339,8 @@ public class MainActivity extends ActionBarActivity
                                 mSpinBar.setAlpha(1);
                                 mCountdownBar.setAlpha(1);
                                 mSpinBar.setProgress(barMax);
+                                deflateAccept();
+                                deflateAutoAccept();
                                 if (!isRotatingCrosshair) {
                                     mCrosshair.startAnimation(mCrosshairRotationAnimation);
                                     isRotatingCrosshair = !isRotatingCrosshair;
@@ -429,6 +502,7 @@ public class MainActivity extends ActionBarActivity
         if (mCountdownTimer != null) {
             mCountdownTimer.cancel();
         }
+        mTextViewCountdown.setText("");
         mCountdownBar.setProgress(ofTenThousand);
 
 
@@ -453,6 +527,7 @@ public class MainActivity extends ActionBarActivity
     }
 
     private void startCountdown(long to) {
+        System.out.println("to " + to + " delay" + ConnectionHandler.serverDelay + " systime " + (System.currentTimeMillis() / 1000L));
         long fromL = to - ConnectionHandler.serverDelay - (System.currentTimeMillis() / 1000L);
         int from = (int) fromL;
         countDown(from);
@@ -643,6 +718,185 @@ public class MainActivity extends ActionBarActivity
         }.execute(null, null, null);
     }
 
+
+
+    //accept Mark
+    private void alphaAnimate(final View view, boolean show) {
+        alphaAnimate(view, show, 1000);
+    }
+
+    private void alphaAnimate(final View view, final boolean show, int durationMillis) {
+        final float from;
+        final float to;
+        if (show) {
+            view.setVisibility(View.VISIBLE);
+            from = 0.0f;
+            to = 1.0f;
+            view.setEnabled(true);
+        } else { //hide
+            from = 1.0f;
+            to = 0.0f;
+            view.setEnabled(false);
+        }
+
+        AlphaAnimation anim = new AlphaAnimation(from, to);
+        anim.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                view.setAlpha(1.0f);
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                view.setAlpha(to);
+                if (!show) {
+                    view.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        anim.setDuration(durationMillis);
+        view.startAnimation(anim);
+    }
+
+    public void pressedTurnOnAutoNotifications() {
+        Log.i(TAG, "pressed notifs onbox");
+        mCbxAutoAcceptDisabled.setChecked(false);
+        ConnectionHandler.updateAutoAccept(true, new UpdateAutoAcceptHandler());
+        mCbxAutoAcceptEnabled.setChecked(true);
+    }
+
+    public void pressedTurnOffAutoNotifications() {
+        Log.i(TAG, "pressed notifs offbox");
+        mCbxAutoAcceptEnabled.setChecked(false);
+        ConnectionHandler.updateAutoAccept(false, new UpdateAutoAcceptHandler());
+        mCbxAutoAcceptDisabled.setChecked(true);
+
+    }
+
+    public void pressedAccept() {
+        lastQueueActionAccept = true;
+        ConnectionHandler.acceptQueue(new AcceptQueueHandler(), true);
+        deflateAcceptRightFirst();
+    }
+
+    public void pressedDecline() {
+        lastQueueActionAccept = false;
+        ConnectionHandler.acceptQueue(new AcceptQueueHandler(), false);
+        deflateAcceptLeftFirst();
+
+    }
+
+    private void inflateAutoAccept() {
+        if (bolAutoAcceptIsDeflated) {
+            ConnectionHandler.getAutoAccept(new GetAutoAcceptHandler());
+            this.alphaAnimate(mLblSuggestAutoAccept, true);
+            this.alphaAnimate(mCbxAutoAcceptDisabled, true);
+            this.alphaAnimate(mCbxAutoAcceptEnabled, true);
+            bolAutoAcceptIsDeflated = false;
+        }
+    }
+    private void deflateAutoAccept() {
+        if (bolAutoAcceptIsDeflated) {
+            return;
+        }
+        this.alphaAnimate(mLblSuggestAutoAccept, false);
+        this.alphaAnimate(mCbxAutoAcceptDisabled, false);
+        this.alphaAnimate(mCbxAutoAcceptEnabled, false);
+        bolAutoAcceptIsDeflated = true;
+    }
+    private void inflateAccept() {
+        if (bolAcceptButtonsAreDeflated) {
+            this.alphaAnimate(mBtnAccept, true);
+            this.alphaAnimate(mBtnDecline, true);
+            bolAcceptButtonsAreDeflated = false;
+        }
+    }
+    private void deflateAccept() {
+        if (bolAcceptButtonsAreDeflated) {
+            return;
+        }
+        this.alphaAnimate(mBtnAccept, false);
+        this.alphaAnimate(mBtnDecline, false);
+        bolAcceptButtonsAreDeflated = true;
+    }
+    private void deflateAcceptLeftFirst() {
+        this.alphaAnimate(mBtnAccept, false, 500);
+        this.alphaAnimate(mBtnDecline, false, 1200);
+        bolAcceptButtonsAreDeflated = true;
+    }
+    private void deflateAcceptRightFirst() {
+        this.alphaAnimate(mBtnAccept, false, 1200);
+        this.alphaAnimate(mBtnDecline, false, 500);
+        bolAcceptButtonsAreDeflated = true;
+    }
+
+
+    public class AcceptQueueHandler implements CallbackGeneral {
+        @Override
+        public void callback(final boolean success, final String error) {
+            myself.runOnUiThread(new Runnable() {
+                public void run() {
+                    Log.d("UI thread", "I am the UI thread");
+                    if (success) {
+                        //do nothing
+                    } else {
+                        Log.e("UI thread", "AcceptQueueFailed because of error: " + error);
+                        new AlertDialog.Builder(myself)
+                                .setTitle("Action Failed")
+                                .setMessage("The queue could not be " + (lastQueueActionAccept ? "accepted" : "declined"))
+                                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                    }
+                                })
+                                .show();
+                    }
+                }
+            });
+        }
+    }
+
+    public class UpdateAutoAcceptHandler implements CallbackGeneral {
+        @Override
+        public void callback(final boolean success, final String error) {
+            myself.runOnUiThread(new Runnable() {
+                public void run() {
+                    Log.d("UI thread", "I am the UI thread");
+                    if (success) {
+                        //do nothing
+                    } else {
+                        mCbxAutoAcceptDisabled.setChecked(!mCbxAutoAcceptDisabled.isChecked());
+                        mCbxAutoAcceptEnabled.setChecked(!mCbxAutoAcceptEnabled.isChecked());
+                        Log.e("UI thread", "autoAcceptUpdateFailed because of error: " + error);
+                    }
+                }
+            });
+        }
+    }
+
+    public class GetAutoAcceptHandler implements CallbackAutoAccept {
+        @Override
+        public void callback(final boolean enabled) {
+            myself.runOnUiThread(new Runnable() {
+                public void run() {
+                    Log.d("UI thread", "I am the UI thread");
+                    if (enabled) {
+                        mCbxAutoAcceptEnabled.setChecked(true);
+                        mCbxAutoAcceptDisabled.setChecked(false);
+                    } else {
+                        mCbxAutoAcceptEnabled.setChecked(false);
+                        mCbxAutoAcceptDisabled.setChecked(true);
+                    }
+                }
+            });
+        }
+    }
+
+    //accept end Mark
 
 
 

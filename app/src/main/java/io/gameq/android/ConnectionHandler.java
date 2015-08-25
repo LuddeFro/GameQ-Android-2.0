@@ -26,7 +26,9 @@ public final class ConnectionHandler {
     private static Context context;
     private static String TAG = "GAMEQ";
     private static String sessionToken = "";
+    private static String ip = "127.0.0.1";
     public static long serverDelay = 0;
+    private static boolean autoAccept = false;
 
 
     protected ConnectionHandler() {
@@ -116,6 +118,95 @@ public final class ConnectionHandler {
         }
 
     }
+
+    public static void acceptQueue(CallbackGeneral caller, final boolean accept) {
+        final CallbackGeneral mCaller = caller;
+        new AsyncTask<Void, Void, Void>() {
+            JSONHolder holder = new JSONHolder();
+            @Override
+            protected Void doInBackground(Void... params) {
+                String response = null;
+                int aa = accept ? 1 : 0;
+                String url = "http://"+ip+":8080/android/accept";
+                String arguments = "accept="+aa+"&key=68440fe0484ad2bb1656b56d234ca5f463f723c3d3d58c3398190877d1d963bb" + "&session_token=" + ConnectionHandler.sessionToken + "&device_id=" + ConnectionHandler.loadDeviceID();
+                Log.i(TAG, "sending: " + arguments + ", to: " + url);
+                URL obj;
+                HttpURLConnection con;
+                BufferedReader in = null;
+                DataOutputStream wr = null;
+                try {
+                    obj = new URL(url);
+                    con = (HttpURLConnection) obj.openConnection();
+
+                    //add request header
+                    con.setRequestMethod("POST");
+                    StringBuilder responsish = new StringBuilder();
+
+                    // Send post request
+                    con.setDoOutput(true);
+                    wr = new DataOutputStream(con.getOutputStream());
+                    byte[] buf = arguments.getBytes("UTF-8");
+                    wr.write(buf, 0, buf.length);
+                    //wr.writeBytes(urlParameters);
+                    wr.flush();
+                    wr.close();
+
+                    int responseCode = con.getResponseCode();
+                    Log.i(TAG, "\nSending 'POST' request to URL : " + url);
+                    Log.i(TAG, "Post parameters : " + arguments);
+                    Log.i(TAG, "Response Code : " + responseCode);
+
+                    in = new BufferedReader(
+                            new InputStreamReader(con.getInputStream()));
+                    String inputLine;
+
+                    while ((inputLine = in.readLine()) != null) {
+                        responsish.append(inputLine);
+                    }
+                    in.close();
+                    response = responsish.toString();
+                    System.out.println(response);
+
+
+                } catch (MalformedURLException e) {
+                    System.out.println("URL Error (MalformedURLException) for " + url );
+                } catch (IOException e) {
+                    System.out.println("URL Error (IOException) for " + url );
+                } finally {
+                    if (wr != null) {
+                        try {
+                            wr.close();
+                        } catch (IOException e) {
+                            System.out.println("wr close exception");
+
+                        }
+                    }
+                    if (in != null) {
+                        try {
+                            in.close();
+
+                        } catch (IOException e) {
+                            System.out.println("in close exception");
+
+                        }
+                    }
+                }
+
+                if (response == null) {
+                    System.out.println("URL Error (nullResponse) for " + url );
+                } else {
+
+                }
+
+
+
+                holder.populate(response);
+                mCaller.callback(holder.success, holder.error);
+                return null;
+            }
+        }.execute();
+    }
+
 
     public static void logout(CallbackGeneral caller) {
         final CallbackGeneral mCaller = caller;
@@ -221,7 +312,43 @@ public final class ConnectionHandler {
             protected Void doInBackground(Void... params) {
                 String response = post("getStatus", "session_token=" + ConnectionHandler.sessionToken + "&device_id=" + ConnectionHandler.loadDeviceID());
                 holder.populate(response);
+                ip = holder.ip;
                 mCaller.callback(holder.success, holder.error, holder.status, holder.game, holder.accept_before);
+                return null;
+            }
+        }.execute();
+    }
+
+    public static void getAutoAccept(CallbackAutoAccept caller) {
+
+        final CallbackAutoAccept mCaller = caller;
+        mCaller.callback(autoAccept);
+        new AsyncTask<Void, Void, Void>() {
+            JSONHolder holder = new JSONHolder();
+            @Override
+            protected Void doInBackground(Void... params) {
+                String response = post("getAutoAccept", "session_token=" + ConnectionHandler.sessionToken + "&device_id=" + ConnectionHandler.loadDeviceID());
+                holder.populate(response);
+                if (holder.success && holder.error.equals("accept")) {
+                    mCaller.callback(true);
+                } else {
+                    mCaller.callback(false);
+                }
+                return null;
+            }
+        }.execute();
+    }
+
+    public static void updateAutoAccept(final boolean setEnabled, CallbackGeneral caller) {
+        final CallbackGeneral mCaller = caller;
+        new AsyncTask<Void, Void, Void>() {
+            JSONHolder holder = new JSONHolder();
+            @Override
+            protected Void doInBackground(Void... params) {
+                int a = setEnabled ? 1 : 0;
+                String response = post("updateAutoAccept", "auto_accept="+ a +"&session_token=" + ConnectionHandler.sessionToken + "&device_id=" + ConnectionHandler.loadDeviceID());
+                holder.populate(response);
+                mCaller.callback(holder.success, holder.error);
                 return null;
             }
         }.execute();

@@ -211,7 +211,9 @@ public class MainActivity extends ActionBarActivity
     @Override
     protected void onPause() {
         super.onPause();
-        dialog.dismiss();
+        if (dialog != null) {
+            dialog.dismiss();
+        }
         stopRepeatingTask();
     }
 

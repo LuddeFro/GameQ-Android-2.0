@@ -33,12 +33,13 @@
     <string name="back">BACK</string>
     <string name="action_submit_email">SUBMIT EMAIL</string>
     <string name="action_forgot_password">Forgot Password?</string>
-    <string name="invalid_password">Must be 6 characters</string>
+    <string name="invalid_password">Must be at least 6 characters</string>
     <string name="password_mismatch">Passwords do not match</string>
-    <string name="error_invalid_email">This email address is invalid</string>
-    <string name="error_invalid_password">This password is too short</string>
-    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_invalid_email">Email address is invalid</string>
+    <string name="error_invalid_password">Password is too short</string>
+    <string name="error_incorrect_password">Password is incorrect</string>
     <string name="error_field_required">This field is required</string>
+    <string name="error_password_mismatch">Password fields do not match</string>
 
     <!-- Strings related to tutorial -->
 

@@ -30,6 +30,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,6 +67,7 @@ public class LoginActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ConnectionHandler.instantiateDataModel(getApplicationContext());
         setContentView(R.layout.activity_login);
 
         // Set up the login form.
@@ -107,6 +109,21 @@ public class LoginActivity extends Activity {
         mPasswordView.setImeOptions(EditorInfo.IME_ACTION_DONE);
         mConfirmPasswordView.setImeOptions(EditorInfo.IME_ACTION_DONE);
 
+        mEmailView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
+                if (id == R.id.login || id == EditorInfo.IME_NULL) {
+                    if (!bolReportingForgottenPassword) {
+                        mPasswordView.requestFocus();
+                    } else {
+                        pressedTopButton();
+                    }
+                    return true;
+                }
+                return false;
+            }
+        });
+
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
@@ -142,7 +159,7 @@ public class LoginActivity extends Activity {
                         pressedTopButton();
                     } else {
                         mConfirmPasswordView.setError(getString(R.string.invalid_password));
-                        mPasswordView.requestFocus();
+                        mConfirmPasswordView.requestFocus();
                     }
                     return true;
                 }
@@ -166,20 +183,26 @@ public class LoginActivity extends Activity {
         // Reset errors.
         mEmailView.setError(null);
         mPasswordView.setError(null);
+        mConfirmPasswordView.setError(null);
 
         // Store values at the time of the login attempt.
         String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
+        String cPassword = mConfirmPasswordView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
 
-        // Check for a valid password, if the user entered one.
-        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
-            mPasswordView.setError(getString(R.string.error_invalid_password));
-            focusView = mPasswordView;
-            cancel = true;
+        if (!bolReportingForgottenPassword) {
+            // Check for a valid password, if the user entered one.
+            if (!isPasswordValid(password)) {
+                mPasswordView.setError(getString(R.string.error_invalid_password));
+                focusView = mPasswordView;
+                cancel = true;
+                mPasswordView.setText("");
+            }
         }
+
 
         // Check for a valid email address.
         if (TextUtils.isEmpty(email)) {
@@ -190,6 +213,16 @@ public class LoginActivity extends Activity {
             mEmailView.setError(getString(R.string.error_invalid_email));
             focusView = mEmailView;
             cancel = true;
+        }
+
+        if (bolRegistering) {
+            if (!password.equals(cPassword)) {
+                mConfirmPasswordView.setError(getString(R.string.error_password_mismatch));
+                focusView = mPasswordView;
+                mPasswordView.setText("");
+                mConfirmPasswordView.setText("");
+                cancel = true;
+            }
         }
 
         if (cancel) {

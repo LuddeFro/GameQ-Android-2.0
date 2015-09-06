@@ -45,7 +45,8 @@
             android:textColorHint="#FFb6bfc6"
             android:textColor="#FFFFFF"
             android:drawableLeft="@drawable/mail"
-            android:drawablePadding="5dp" />
+            android:drawablePadding="5dp"
+            android:textSize="15sp" />
 
         <EditText android:id="@+id/password" android:layout_width="match_parent"
             android:layout_height="wrap_content" android:hint="@string/prompt_password"
@@ -57,7 +58,8 @@
             android:textColor="#FFFFFFFF"
             android:textColorHint="#FFb6bfc6"
             android:drawableLeft="@drawable/lock"
-            android:drawablePadding="5dp" />
+            android:drawablePadding="5dp"
+            android:textSize="15sp" />
 
         <EditText android:id="@+id/confirm_password" android:layout_width="match_parent"
             android:layout_height="wrap_content" android:hint="@string/prompt_password"

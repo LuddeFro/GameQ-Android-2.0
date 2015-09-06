@@ -38,6 +38,7 @@ public final class ConnectionHandler {
     public static void instantiateDataModel(Context context) {
         if (preferences == null) {
             preferences = new SecurePreferences(context, ConnectionHandler.generatePreferenceStore(), ConnectionHandler.generateStoreKey(), true);
+            ConnectionHandler.context = context;
         }
     }
 
@@ -197,10 +198,7 @@ public final class ConnectionHandler {
                 } else {
 
                 }
-
-
-
-                holder.populate(response);
+                holder.populate(response, context);
                 mCaller.callback(holder.success, holder.error);
                 return null;
             }
@@ -215,7 +213,7 @@ public final class ConnectionHandler {
             @Override
             protected Void doInBackground(Void... params) {
                 String response = post("logout", "session_token=" + ConnectionHandler.sessionToken + "&device_id=" + ConnectionHandler.loadDeviceID());
-                holder.populate(response);
+                holder.populate(response, context);
                 ConnectionHandler.saveEmail("");
                 ConnectionHandler.savePassword("");
                 mCaller.callback(holder.success, holder.error);
@@ -241,7 +239,7 @@ public final class ConnectionHandler {
             @Override
             protected Void doInBackground(Void... params) {
                 String response = post("login", "email="+mEmail+"&password="+mPassword + "&push_token=" + ConnectionHandler.loadToken() + deviceString);
-                holder.populate(response);
+                holder.populate(response, context);
                 if (holder.success) {
                     ConnectionHandler.saveEmail(mEmail);
                     ConnectionHandler.savePassword(mPassword);
@@ -273,7 +271,7 @@ public final class ConnectionHandler {
             @Override
             protected Void doInBackground(Void... params) {
                 String response = post("register", "email="+mEmail+"&password="+mPassword + "&push_token=" + ConnectionHandler.loadToken() + deviceString);
-                holder.populate(response);
+                holder.populate(response, context);
                 if (holder.success) {
                     ConnectionHandler.saveEmail(mEmail);
                     ConnectionHandler.savePassword(mPassword);
@@ -297,7 +295,7 @@ public final class ConnectionHandler {
             @Override
             protected Void doInBackground(Void... params) {
                 String response = post("forgotPassword", "email="+mEmail);
-                holder.populate(response);
+                holder.populate(response, context);
                 mCaller.callback(holder.success, holder.error);
                 return null;
             }
@@ -311,7 +309,7 @@ public final class ConnectionHandler {
             @Override
             protected Void doInBackground(Void... params) {
                 String response = post("getStatus", "session_token=" + ConnectionHandler.sessionToken + "&device_id=" + ConnectionHandler.loadDeviceID());
-                holder.populate(response);
+                holder.populate(response, context);
                 ip = holder.ip;
                 mCaller.callback(holder.success, holder.error, holder.status, holder.game, holder.accept_before);
                 return null;
@@ -328,7 +326,7 @@ public final class ConnectionHandler {
             @Override
             protected Void doInBackground(Void... params) {
                 String response = post("getAutoAccept", "session_token=" + ConnectionHandler.sessionToken + "&device_id=" + ConnectionHandler.loadDeviceID());
-                holder.populate(response);
+                holder.populate(response, context);
                 if (holder.success && holder.error.equals("accept")) {
                     mCaller.callback(true);
                 } else {
@@ -347,7 +345,7 @@ public final class ConnectionHandler {
             protected Void doInBackground(Void... params) {
                 int a = setEnabled ? 1 : 0;
                 String response = post("updateAutoAccept", "auto_accept="+ a +"&session_token=" + ConnectionHandler.sessionToken + "&device_id=" + ConnectionHandler.loadDeviceID());
-                holder.populate(response);
+                holder.populate(response, context);
                 mCaller.callback(holder.success, holder.error);
                 return null;
             }
@@ -361,7 +359,7 @@ public final class ConnectionHandler {
             @Override
             protected Void doInBackground(Void... params) {
                 String response = post("setStatus", "session_token=" + ConnectionHandler.sessionToken + "&device_id=" + ConnectionHandler.loadDeviceID());
-                holder.populate(response);
+                holder.populate(response, context);
                 mCaller.callback(holder.success, holder.error);
                 return null;
             }
@@ -375,7 +373,7 @@ public final class ConnectionHandler {
             @Override
             protected Void doInBackground(Void... params) {
                 String response = post("versionControl", "");
-                holder.populate(response);
+                holder.populate(response, context);
                 mCaller.callback(holder.success, holder.error, holder.current_version, holder.download_link);
                 return null;
             }
@@ -391,7 +389,7 @@ public final class ConnectionHandler {
             @Override
             protected Void doInBackground(Void... params) {
                 String response = post("updateToken", "push_token="+mToken+"&session_token=" + ConnectionHandler.sessionToken + "&device_id=" + ConnectionHandler.loadDeviceID());
-                holder.populate(response);
+                holder.populate(response, context);
                 mCaller.callback(holder.success, holder.error);
                 return null;
             }
@@ -408,7 +406,7 @@ public final class ConnectionHandler {
             @Override
             protected Void doInBackground(Void... params) {
                 String response = post("submitCSV", "csv="+mCSV+"&game="+mGame+"&type="+mType+"&session_token=" + ConnectionHandler.sessionToken + "&device_id=" + ConnectionHandler.loadDeviceID());
-                holder.populate(response);
+                holder.populate(response, context);
                 mCaller.callback(holder.success, holder.error);
                 return null;
             }
@@ -423,7 +421,7 @@ public final class ConnectionHandler {
             @Override
             protected Void doInBackground(Void... params) {
                 String response = post("submitFeedback", "feedback="+mFeedback+"&session_token=" + ConnectionHandler.sessionToken + "&device_id=" + ConnectionHandler.loadDeviceID());
-                holder.populate(response);
+                holder.populate(response, context);
                 mCaller.callback(holder.success, holder.error);
                 return null;
             }
@@ -440,7 +438,7 @@ public final class ConnectionHandler {
             @Override
             protected Void doInBackground(Void... params) {
                 String response = post("updatePassword", "email="+mEmail+"&password="+mOldPassword+"&new_password="+mNewPassword+"&session_token=" + ConnectionHandler.sessionToken + "&device_id=" + ConnectionHandler.loadDeviceID());
-                holder.populate(response);
+                holder.populate(response, context);
                 mCaller.callback(holder.success, holder.error);
                 return null;
             }
@@ -465,7 +463,7 @@ public final class ConnectionHandler {
                 @Override
                 protected Void doInBackground(Void... params) {
                     String response = post("login", "email="+mEmail+"&password="+mPassword + "&push_token=" + ConnectionHandler.loadToken() + deviceString);
-                    holder.populate(response);
+                    holder.populate(response, context);
                     if (holder.success) {
                         ConnectionHandler.saveEmail(mEmail);
                         ConnectionHandler.savePassword(mPassword);

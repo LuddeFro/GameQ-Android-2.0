@@ -1,6 +1,7 @@
 package io.gameq.android;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -8,6 +9,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+
+import com.viewpagerindicator.LinePageIndicator;
 
 /**
  * Created by Ludvig on 16/07/15.
@@ -39,18 +42,20 @@ public class Tutorial_Activity_Fragment extends FragmentActivity {
         mPager = (ViewPager) findViewById(R.id.pager);
         mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager(), this);
         mPager.setAdapter(mPagerAdapter);
+
+
+        //Bind the title indicator to the adapter
+        LinePageIndicator indicator = (LinePageIndicator)findViewById(R.id.indicator);
+        indicator.setViewPager(mPager);
+
     }
 
     @Override
     public void onBackPressed() {
-        if (mPager.getCurrentItem() == 0) {
-            // If the user is currently looking at the first step, allow the system to handle the
-            // Back button. This calls finish() on this activity and pops the back stack.
-            super.onBackPressed();
-        } else {
-            // Otherwise, select the previous step.
-            mPager.setCurrentItem(mPager.getCurrentItem() - 1);
-        }
+        ConnectionHandler.saveFirstLoginDone();
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra(getString(R.string.intent_inhouse_extra), true);
+        startActivity(intent);
     }
 
     /**

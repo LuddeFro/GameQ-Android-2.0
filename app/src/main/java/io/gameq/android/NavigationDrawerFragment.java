@@ -99,8 +99,8 @@ public class NavigationDrawerFragment extends Fragment {
     private EditText mTxtOldPassword;
     private EditText mTxtNewPassword;
     private EditText mTxtConfirmPassword;
-    private boolean mIsChangingPassword= false;
-    private boolean mIsWritingFeedback = false;
+    public boolean mIsChangingPassword= false;
+    public boolean mIsWritingFeedback = false;
     private RelativeLayout mChangePassContainer;
     private RelativeLayout mFeedbackContainer;
 
@@ -311,11 +311,11 @@ public class NavigationDrawerFragment extends Fragment {
 
         ConnectionHandler.loadShouldReceiveNotifications();
         if (ConnectionHandler.loadShouldReceiveNotifications()) {
-            mOnBoxNotifications.setChecked(false);
-            mOffBoxNotifications.setChecked(true);
-        } else {
             mOnBoxNotifications.setChecked(true);
             mOffBoxNotifications.setChecked(false);
+        } else {
+            mOnBoxNotifications.setChecked(false);
+            mOffBoxNotifications.setChecked(true);
         }
         mLblUsername.setText(ConnectionHandler.loadEmail());
 
@@ -538,7 +538,7 @@ public class NavigationDrawerFragment extends Fragment {
 
     public void pressedSubmitFeedback() {
         System.out.println("pressed sub feed");
-        if (mTxtFeedback.length() > 10) {
+        if (mTxtFeedback.length() > 5) {
             disableAll();
             ConnectionHandler.submitFeedback(new FeedbackHandler(), mTxtFeedback.getText().toString());
         } else {
@@ -554,6 +554,7 @@ public class NavigationDrawerFragment extends Fragment {
         } else if (!mTxtConfirmPassword.getText().toString().equals(mTxtNewPassword.getText().toString())) {
             mTxtConfirmPassword.setError(getString(R.string.password_mismatch));
         } else {
+            disableAll();
             ConnectionHandler.updatePassword(new ChangePassHandler(), ConnectionHandler.loadEmail(), mTxtNewPassword.getText().toString(), mTxtOldPassword.getText().toString());
         }
     }
@@ -733,6 +734,7 @@ public class NavigationDrawerFragment extends Fragment {
         public void callback(final boolean success, final String error) {
             mMainActivity.runOnUiThread(new Runnable() {
                 public void run() {
+                    enableAll();
                     Log.d("UI thread", "I am the UI thread");
                     if (success) {
                         //do nothing
@@ -749,6 +751,7 @@ public class NavigationDrawerFragment extends Fragment {
         public void callback(final boolean success, final String error) {
             mMainActivity.runOnUiThread(new Runnable() {
                 public void run() {
+                    enableAll();
                     Log.d("UI thread", "I am the UI thread");
                     if (success) {
                         //do nothing

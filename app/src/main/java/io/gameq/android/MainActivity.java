@@ -199,6 +199,12 @@ public class MainActivity extends ActionBarActivity
         mCrosshair.startAnimation(mCrosshairRotationAnimation);
         mCrosshair.getAnimation().cancel();
         mCrosshair.getAnimation().reset();
+        ConnectionHandler.getAutoAccept(new CallbackAutoAccept() {
+            @Override
+            public void callback(boolean enabled) {
+                return;
+            }
+        });
     }
 
     @Override
@@ -222,7 +228,13 @@ public class MainActivity extends ActionBarActivity
     public boolean onKeyDown(int keyCode, KeyEvent event)  {
         if (keyCode == KeyEvent.KEYCODE_BACK ) {
             if (mNavigationDrawerFragment.isDrawerOpen()) {
-                ((DrawerLayout) findViewById(R.id.drawer_layout)).closeDrawers();
+                if (mNavigationDrawerFragment.mIsChangingPassword) {
+                    mNavigationDrawerFragment.pressedChangePassword();
+                } else if (mNavigationDrawerFragment.mIsWritingFeedback) {
+                    mNavigationDrawerFragment.pressedFeedback();
+                } else {
+                    ((DrawerLayout) findViewById(R.id.drawer_layout)).closeDrawers();
+                }
                 return true;
             }
         }
@@ -327,7 +339,9 @@ public class MainActivity extends ActionBarActivity
                                     mCountdownBar.setAlpha(1);
                                     mSpinBar.setProgress(barMax);
                                     deflateAutoAccept();
-                                    inflateAccept();
+                                    if (Encoding.getGameFromInt(game) == Game.LOL || Encoding.getGameFromInt(game) == Game.CSGO || Encoding.getGameFromInt(game) == Game.DOTA2) {
+                                        inflateAccept();
+                                    }
                                     if (!isRotatingCrosshair) {
                                         mCrosshair.startAnimation(mCrosshairRotationAnimation);
                                         isRotatingCrosshair = !isRotatingCrosshair;
@@ -354,8 +368,10 @@ public class MainActivity extends ActionBarActivity
 
                         mLastStatus = Encoding.getStatusFromInt(status);
 
-                    } else {
-                        //do nothing
+                    } else if (error.equals(getString(R.string.connection_failure))) {
+                        mTextViewGame.setText(getString(R.string.connection_failure));
+                    } else { //do nothing
+
                     }
                 }
             });
@@ -504,6 +520,7 @@ public class MainActivity extends ActionBarActivity
         if (mCountdownTimer != null) {
             mCountdownTimer.cancel();
         }
+        deflateAccept();
         mTextViewCountdown.setText("");
         mCountdownBar.setProgress(ofTenThousand);
 

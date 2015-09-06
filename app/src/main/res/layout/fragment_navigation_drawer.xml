@@ -31,7 +31,7 @@ android:background="@color/navBackgroundGray"
         android:layout_marginRight="15dp"
         android:layout_marginLeft="15dp"
         android:layout_centerVertical="true"
-        android:textSize="20sp" />
+        android:textSize="15sp" />
 
     </RelativeLayout>
     <RelativeLayout android:id="@+id/notification_container"
@@ -54,7 +54,8 @@ android:background="@color/navBackgroundGray"
         android:text="@string/title_section1"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:textSize="13sp" />
 
         <CheckBox
             android:layout_width="20dp"
@@ -106,7 +107,8 @@ android:background="@color/navBackgroundGray"
         android:text="@string/title_section2"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
-        android:layout_alignParentLeft="true"/>
+        android:layout_alignParentLeft="true"
+            android:textSize="13sp" />
 
 
         <CheckBox
@@ -163,7 +165,8 @@ android:background="@color/navBackgroundGray"
             android:layout_centerVertical="true"
         android:layout_alignParentLeft="true"
             android:gravity="center_vertical"
-            android:layout_alignParentTop="true" />
+            android:layout_alignParentTop="true"
+            android:textSize="13sp" />
 
 
         <Button android:id="@+id/feedback_button"
@@ -184,7 +187,8 @@ android:background="@color/navBackgroundGray"
             android:layout_alignParentStart="true"
             android:textColorHighlight="@color/Orange"
             android:textColor="#FFFFFF"
-            android:backgroundTint="@color/Orange" />
+            android:backgroundTint="@color/Orange"
+            android:textSize="10sp" />
 
         <Button
             android:layout_width="wrap_content"
@@ -228,7 +232,8 @@ android:background="@color/navBackgroundGray"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"/>
+        android:layout_alignParentTop="true"
+        android:textSize="13sp" />
 
         <Button android:id="@+id/change_password_button"
             android:layout_width="match_parent"
@@ -253,7 +258,10 @@ android:background="@color/navBackgroundGray"
             android:textColor="#FFFFFF"
             android:drawableLeft="@drawable/lock"
             android:drawablePadding="5dp"
-            android:paddingTop="3dp" />
+            android:paddingTop="3dp"
+            android:hint="@string/prompt_current_password"
+            android:textColorHint="#FFb6bfc6"
+            android:textSize="13sp" />
         <EditText
             android:layout_width="match_parent"
             android:layout_height="40dp"
@@ -265,7 +273,10 @@ android:background="@color/navBackgroundGray"
             android:textColor="#FFFFFF"
             android:drawableLeft="@drawable/lock"
             android:drawablePadding="5dp"
-            android:paddingTop="3dp"/>
+            android:paddingTop="3dp"
+            android:hint="@string/prompt_new_password"
+            android:textColorHint="#FFb6bfc6"
+            android:textSize="13sp" />
         <EditText
             android:layout_width="match_parent"
             android:layout_height="40dp"
@@ -277,7 +288,10 @@ android:background="@color/navBackgroundGray"
             android:textColor="#FFFFFF"
             android:drawableLeft="@drawable/lock"
             android:drawablePadding="5dp"
-            android:paddingTop="3dp"/>
+            android:paddingTop="3dp"
+            android:hint="@string/prompt_confirm_password"
+            android:textColorHint="#FFb6bfc6"
+            android:textSize="13sp" />
 
         <Button
             android:layout_width="wrap_content"
@@ -317,7 +331,8 @@ android:background="@color/navBackgroundGray"
         android:text="@string/title_section5"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:layout_alignParentLeft="true" />
+        android:layout_alignParentLeft="true"
+        android:textSize="13sp" />
 
         <Button android:id="@+id/tutorial_button"
             android:layout_width="match_parent"
@@ -333,24 +348,6 @@ android:background="@color/navBackgroundGray"
         android:background="#FF34404d"
         android:layout_alignBottom="@id/tutorial_container"
         android:id="@+id/view" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="40dp"
-        android:text="@string/action_sign_out"
-        android:id="@+id/logout_button"
-        android:background="@color/Orange"
-        android:layout_gravity="bottom"
-        android:textColor="#FFFFFFFF"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="false"
-        android:layout_marginRight="15dp"
-        android:layout_marginLeft="15dp"
-        android:layout_marginBottom="15dp"
-        android:enabled="true" />
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -396,6 +393,32 @@ android:background="@color/navBackgroundGray"
 
 
 
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/logout_container"
+        android:background="@color/navBackgroundGray">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:text="@string/action_sign_out"
+            android:id="@+id/logout_button"
+            android:background="@color/Orange"
+            android:layout_gravity="bottom"
+            android:textColor="#FFFFFFFF"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="false"
+            android:layout_marginRight="15dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginBottom="15dp"
+            android:enabled="true" />
     </RelativeLayout>
 
 

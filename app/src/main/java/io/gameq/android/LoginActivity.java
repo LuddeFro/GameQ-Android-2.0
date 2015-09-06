@@ -127,8 +127,10 @@ public class LoginActivity extends Activity {
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
-                if (id == R.id.login || id == EditorInfo.IME_NULL) {
+                System.out.println(1);
+                    System.out.println(2);
                     if (bolRegistering) {
+                        System.out.println(3);
                         if (textView.getText().length() > 5) {
                             mConfirmPasswordView.requestFocus();
                         } else {
@@ -136,24 +138,26 @@ public class LoginActivity extends Activity {
                             mPasswordView.requestFocus();
                         }
                     } else {
+                        System.out.println(4);
                         //signing in
                         if (textView.getText().length() > 5) {
+                            System.out.println(5);
                             pressedTopButton();
                         } else {
+                            System.out.println(6);
                             mPasswordView.setError(getString(R.string.invalid_password));
                             mPasswordView.requestFocus();
                         }
                     }
                     return true;
-                }
-                return false;
+
             }
         });
 
         mConfirmPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
-                if (id == R.id.login || id == EditorInfo.IME_NULL) {
+
                     //signing up
                     if (textView.getText().length() > 5) {
                         pressedTopButton();
@@ -162,8 +166,7 @@ public class LoginActivity extends Activity {
                         mConfirmPasswordView.requestFocus();
                     }
                     return true;
-                }
-                return false;
+
             }
         });
 

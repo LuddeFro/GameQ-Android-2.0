@@ -9,14 +9,15 @@
         android:layout_width="wrap_content"
         android:layout_height="29dp"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="@string/step_1"
+        android:text="@string/step_3"
         android:id="@+id/textView3"
         android:gravity="center"
         android:textColor="#FFFFFF"
         android:layout_marginBottom="0dp"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="45dp"
-        android:layout_alignParentTop="true" />
+        android:layout_alignParentTop="true"
+        android:textSize="15sp" />
 
 
     <TextView
@@ -29,7 +30,8 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="0dp"
         android:gravity="center"
-        android:textColor="#FFFFFF" />
+        android:textColor="#FFFFFF"
+        android:textSize="20sp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -42,7 +44,8 @@
         android:lines="2"
         android:layout_above="@+id/tut_finished_button"
         android:layout_marginBottom="37dp"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:textSize="13sp" />
 
     <ImageView
         android:layout_width="wrap_content"

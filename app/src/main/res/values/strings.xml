@@ -22,6 +22,13 @@
     <string name="minimum_length">Minimum 6 characters</string>
     <string name="gcm_sender_id">773141536608</string>
 
+
+    <string name="prompt_current_password">Current Password</string>
+    <string name="prompt_new_password">New Password</string>
+    <string name="prompt_confirm_password">Confirm password</string>
+
+    <string name="connection_failure">Connection failure</string>
+
     <!-- Strings related to login -->
     <string name="title_activity_login">Sign in</string>
 
@@ -48,7 +55,7 @@
     <string name="step_3">Step 3</string>
 
     <string name="tut_title_1">Congratulations!</string>
-    <string name="tut_title_2">Download \&amp; Install</string>
+    <string name="tut_title_2">Download &amp; Install</string>
     <string name="tut_title_3">Sign In</string>
     <string name="tut_title_4">Enjoy</string>
 

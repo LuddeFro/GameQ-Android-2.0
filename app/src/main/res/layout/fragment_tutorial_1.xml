@@ -7,16 +7,17 @@
 
     <TextView
         android:layout_width="wrap_content"
-        android:layout_height="26dp"
+        android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/tut_title_1"
         android:id="@+id/textView"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="58dp"
         android:gravity="center"
         android:textColor="#FFFFFF"
-        android:contentDescription="@string/dummy" />
+        android:contentDescription="@string/dummy"
+        android:textSize="20sp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -31,7 +32,8 @@
         android:layout_marginBottom="100dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:textSize="13sp" />
 
     <ImageView
         android:layout_width="wrap_content"

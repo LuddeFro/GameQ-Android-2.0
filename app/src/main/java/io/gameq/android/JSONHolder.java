@@ -1,5 +1,7 @@
 package io.gameq.android;
 
+import android.content.Context;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -23,7 +25,7 @@ public class JSONHolder {
         success = false;
     }
 
-    public void populate(String jsonString) {
+    public void populate(String jsonString, Context context) {
         String oJsonString = jsonString;
         if (jsonString == null) {
             jsonString = "";
@@ -34,7 +36,7 @@ public class JSONHolder {
         } catch (JSONException e) {
             success = false;
             System.out.println("json parse fail");
-            error = "json parse fail";
+            error =  context.getString(R.string.connection_failure);
             return;
         }
         if (jObject == null) {
